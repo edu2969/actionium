@@ -1,12 +1,10 @@
-import { NextPage } from "next";
-import { FormEventHandler, useState } from "react";
+"use client"
+import { useState } from "react";
 import { signIn } from 'next-auth/react';
 
-interface Props {}
-
-const SignIn: NextPage = (props): JSX.Element => {
+const SignIn = (props) => {
   const [userInfo, setUserInfo] = useState({ email: '', password: ''});
-  const handleSubmit:FormEventHandler<HTMLFormElement> = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await signIn('credentials', {
       email: userInfo.email,
