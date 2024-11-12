@@ -2,28 +2,27 @@ import mongoose, { Schema, models } from "mongoose";
 
 const clientSchema = new Schema(
   {
-    userId: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
+    name: {
+      type: String,
+      required: true,
     },
-    brandId: {
-      type: mongoose.Types.ObjectId,
-      ref: "Brand",
+    completeName: {
+        type: String,
     },
-    rut: {
+    identificationId: {
+      type: String,
+    },
+    identificationType: {
+      type: String,
+    },
+    email: {
       type: String,
     },
     address: {
-      type: String, 
-    },
-    country: {
       type: String,
     },
-    birthDate: {
-      type: Date,
-    },
-    resume: {
-      type: String,      
+    imgLogo: {
+      type: String,
     },
   },
   { timestamps: true }

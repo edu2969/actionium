@@ -21,6 +21,7 @@ export async function GET() {
         const set = await UserStorageItemSet.find({
             userId: users[i]._id,
             toolStorageId: ts._id,
+            quantity: { $gt: 0 },
         });                
         team.push({
             _id: users[i]._id,

@@ -1,49 +1,54 @@
 import mongoose, { Schema, models } from "mongoose";
 
-const paymentSchema = new Schema({
-  type: {
-    type: String,
-    required: true,
+const projectSchema = new Schema(
+  {
+    contractId: {
+      type: Schema.Types.ObjectId,
+      ref: "Contract",
+    },
+    identifier: {
+      type: Number,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    projectType: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: Number,
+      required: true,
+    },
+    netAmount: {
+      type: Number,
+    },
+    balance: {
+      type: Number,
+    },
+    currency: {
+      type: String,
+    },
+    kickOff: {
+      type: Date,
+    },
+    end: {
+      type: Date,
+    },
+    rentability: {
+      type: Number,
+    },
+    percentageComplete: {
+      type: Number,
+    },
+    estimatedHrs: {
+      type: Number,
+    },
   },
-  status: {
-    type: Number,
-    required: true,
-  },
-  confirmed: {
-    type: Date,
-  },
-  paid: {
-    type: Date,
-  },
-  netAmount: {
-    type: Number,
-    required: true,
-  },
-})
-
-const projectSchema = new Schema({
-  brandId: {
-    type: mongoose.Types.ObjectId,
-    ref: "Brand",
-  },
-  clientId: {
-    type: mongoose.Types.ObjectId,
-    ref: "Client",
-  },
-  payments: {
-    type: [paymentSchema],
-  },
-  netAmount: {
-    type: Number,
-  },
-  totalOutcomes: {
-    type: Number,
-  },
-  costRatio: {
-    type: Number,
-  }
-},
-  { timestamps: true });
+  { timestamps: true }
+);
 
 const Project = models.Project || mongoose.model("Project", projectSchema);
 export default Project;

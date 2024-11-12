@@ -11,7 +11,7 @@ export function MultiLineChart({ data, width, height }) {
         .range([margin.l, width - margin.r]);
 
     let yScale = d3.scaleLinear()
-        .domain([0, 7000000])
+        .domain([0, 5000000])
         .range([height - margin.b, margin.t]);
 
     let line = d3.line()
@@ -21,8 +21,8 @@ export function MultiLineChart({ data, width, height }) {
     let lineaLeyenda = d3.line()
         .x(d=> d[0])
         .y(d=> d[1]);
-    let leyendas = [[[width / 2 - 6, 5], [width / 2 + 6, 5]], 
-        [[width / 2 - 6, 29], [width / 2 + 6, 29]]].map(l => {
+    let leyendas = [[[width / 2 - 6, 4], [width / 2 + 6, 4]], 
+    [[width / 2 - 6, 22], [width / 2 + 6, 22]], [[width / 2 - 6, 40], [width / 2 + 6, 40]], ].map(l => {
         return lineaLeyenda(l)
     });
     return (
@@ -54,7 +54,7 @@ export function MultiLineChart({ data, width, height }) {
 
                 {data.map((kv, index) => 
                     <motion.path
-                        key={"p_" + kv.vendorName + "_" + d.date}
+                        key={"p_" + kv.category + "_" + d.date}
                         initial={{ pathLength: 0 }}
                         animate={{ pathLength: 1 }}
                         transition={{ duration: 1.4, delay: 0.5, type: "spring" }}
@@ -64,7 +64,7 @@ export function MultiLineChart({ data, width, height }) {
                 {data.map((kv, index) =>  
                     kv.points.map((d, i) => 
                     <motion.circle
-                        key={"c_" + kv.vendorName + "_" + d.date}
+                        key={"c_" + kv.category + "_" + d.date}
                         initial={{ cy: height - margin.b }}
                         animate={{ cy: yScale(d.value) }}
                         transition={{ type: "spring", duration: 0.4, delay: 0.1 * i }}
@@ -76,11 +76,11 @@ export function MultiLineChart({ data, width, height }) {
                         stroke="white" />))}
 
                 {data.map((kv, index) =>
-                    <path key={`leyenda_${kv.vendorName}`} d={leyendas[index]} fill="none" stroke={COLORS_PALETTE[index]} strokeWidth={4}/>)}
+                    <path key={`leyenda_${kv.category}`} d={leyendas[index]} fill="none" stroke={COLORS_PALETTE[index]} strokeWidth={4}/>)}
 
                 {data.map((kv, index) => 
-                    <g key={`label_${kv.vendorName}`} transform={`translate(${width / 2 + 16}, ${12 + index * 24})`}>
-                        <text className="text-sm" fill={COLORS_PALETTE[index]}>{kv.vendorName}</text>
+                    <g key={`label_${kv.category}`} transform={`translate(${width / 2 + 16}, ${10 + index * 18})`}>
+                        <text className="text-sm" fill={COLORS_PALETTE[index]}>{kv.category}</text>
                     </g>)}
             </svg>
         </>

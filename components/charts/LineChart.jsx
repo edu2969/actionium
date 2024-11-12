@@ -11,7 +11,7 @@ export function LineChart({ data, width, height }) {
       .range([margin.l, width - margin.r]);
   
     let yScale = d3.scaleLinear()
-      .domain([0, 1000000])
+      .domain([0, 1500000])
       .range([height - margin.b, margin.t]);
   
     let line = d3.line()

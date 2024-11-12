@@ -21,7 +21,8 @@ export async function POST(req, { params }) {
         rut: body.rut,
         gender: body.gender,
         birthDate: body.birthDate ? new Date(body.birthDate) : null,
-        avatarImg: body.avatarImg
+        avatarImg: body.avatarImg,
+        area: body.area,
     }, {
         new: true
     });

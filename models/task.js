@@ -1,14 +1,63 @@
 import mongoose, { Schema, models } from "mongoose";
 
+const todoSchema = new Schema({
+  finishedAt: {
+    type: Date
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  hours: {
+    type: Number,
+    required: true,
+  }
+});
+
+const logSchema = new Schema({
+  collaboratorId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+  entry: {
+    type: String,
+    required: true,
+  }
+});
+
 const taskSchema = new Schema(
   {
     projectId: {
-      type: mongoose.Types.ObjectId,
-      ref: "Project",
-    },
-    type: {
-      type: Number, // 1. NextJS dev, 2. Angular dev., 3. Gestión web-mail, 4. Meteor dev, 
+      type: Schema.Types.ObjectId,
+      ref: "Contract",
       required: true,
+    },
+    priority: {
+      type: Number,
+      required: true,
+    },
+    taskType: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: Number,
+      required: true,
+    },
+    assignedTo: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    weight: {
+      type: Number,
+    },
+    estimatedWeight: {
+      type: Number,      
     },
     title: {
       type: String,
@@ -17,20 +66,24 @@ const taskSchema = new Schema(
     description: {
       type: String,
     },
-    start: {
-      type: Date,
-      required: true,
+    logs: {
+      type: [logSchema],
+      default: [],
     },
-    end: {
-      type: Date,
-      required: true,
+    todos: {
+      type: [todoSchema],
+      default: [],
     },
-    weight: {
+    startDate: {
+      type: Date,
+    },
+    endDate: {
+      type: Date,
+    },
+    progress: {
       type: Number,
-    },
-    attachments: {
-        type: [String],
-    },    
+      default: 0,
+    }
   },
   { timestamps: true }
 );

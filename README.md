@@ -1,12 +1,24 @@
-# ACTIONIUM
-## Gestión de clientes y proyectos
+# OCUSTOCUS
+## Gestión de stocks y bodega
 
-- Gestiona cartera de clientes
-- Proyectos + retorno de inversión + tareas estimado/real + eficiencia -> Kaisen
-- Notificaciones pagos, cobros, cotizaciones, bitácoras, resources
+OCUSTOCUS es una poderosa herramienta que colabora en la gestión
+de stocks y bodega
 
-Clientes
+- Gestiona perfiles de encargado de bodega, encargado de OCs y vista gerencial
+- Apoya efectivamente en KPIs relevantes en la mejora de gestión
+- Traza la información y estima con mayor precisión presupuestos anuales
 
-- SIMEN
-- JP - Electric
-- SETOP
+Notas
+
+Alertas Joce
+- Cuando ocurre un quiebre de stock
+
+Oportunidades
+- KPI para desempaño de bodegas
+- KPI de proveedores críticos
+- Estrategia de estimación de presupuesto anual y seguimiento
+- Históricos
+
+Al llegar una bodega puedes corregir un OC
+Se pidio 3 pero llegó una, por tanto faltan 2
+

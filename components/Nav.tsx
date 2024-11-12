@@ -12,7 +12,7 @@ export default function Nav({ user }: { user: User | null}) {
     return (
         <div className={`w-screen fixed top-0 left-0 ${path === '/' ? 'hidden' : 'visible'}`}>
             <div className="absolute w-full">
-                <div className="w-full bg-teal-600 flex">
+                <div className="w-full bg-[#839dd1] flex">
                     <AiOutlineMenu size="1.7rem" className="m-4 text-white cursor-pointer"
                         onClick={() => setMenuActivo(true)} />
                     <div className="w-full flex justify-end">
@@ -22,17 +22,17 @@ export default function Nav({ user }: { user: User | null}) {
                     </div>
                 </div>
             </div>
-            <div className={`min-w-2xl min-h-full z-50 absolute transition-all bg-teal-700 p-6 ${menuActivo ? 'left-0' : '-left-full'}`}>
+            <div className={`min-w-2xl min-h-full z-50 absolute transition-all bg-[#9cb6dd] p-6 ${menuActivo ? 'left-0' : '-left-full'}`}>
                 <AiOutlineClose size="2rem" className="text-white m-auto cursor-pointer absolute top-4 right-4"
                     onClick={() => setMenuActivo(false)} />
                 <div className="mt-12 text-white space-y-6">
                     <Link href="/modulos/about" onClick={() => setMenuActivo(false)}>
-                        <div className="flex hover:bg-white hover:text-teal-700 rounded-md p-2 cursor-pointer">
+                        <div className="flex hover:bg-white hover:text-[#9cb6dd] rounded-md p-2 cursor-pointer">
                             <AiFillAliwangwang size="4rem" />
                             <p className="text-2xl ml-2 mt-4">Acerca de...</p>
                         </div>
                     </Link>
-                    <button className="min-w-2xl flex hover:bg-white hover:text-teal-700 rounded-md p-2"
+                    <button className="min-w-2xl flex hover:bg-white hover:text-[#9cb6dd] rounded-md p-2"
                         onClick={() => signOut({ callbackUrl: '/' })}>
                         <AiOutlineLogout size="4rem" />
                         <p className="text-2xl ml-2 mt-4">Cerrar sesión</p>

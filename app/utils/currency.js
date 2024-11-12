@@ -1,3 +1,3 @@
-export default function numberFormat(x) {
+export default function amountFormat(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }

@@ -18,8 +18,9 @@ export async function POST(req) {
       await connectMongoDB();
       const params = await req.json();
       console.log("Users POST...", params);
-      const exists = await User.findOne(params._id ? { _id: params._id } : { email: params.email });
+      const exists = await User.findOne(params._id ? { _id: params.id } : { email: params.email });
       if (exists) {
+        console.log("BODY UPDATE", exists._id , body);
           const user = await User.findByIdAndUpdate(exists._id, body, {
               new: true
           });

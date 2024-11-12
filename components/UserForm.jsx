@@ -1,5 +1,5 @@
 "use client";
-import { AiOutlineUser, AiFillEdit, AiFillSafetyCertificate } from 'react-icons/ai'
+import { AiOutlineUser } from 'react-icons/ai'
 import Datepicker from 'react-tailwindcss-datepicker'
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -29,6 +29,7 @@ export default function UserForm({ user }) {
         defaultValues: {
             name: user.name,
             email: user.email,
+            area: user.area,
             role: user.role,
             rut: user.rut,
             gender: user.gender,
@@ -86,35 +87,15 @@ export default function UserForm({ user }) {
                             className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                     </div>
                 </div>
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">E-mail</label>
-                    <div className="mt-2">
-                        <input {...register('email')} id="email" name="email" type="email" autoComplete="email" required
-                            className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                    </div>
-                </div>
                 <div className="w-full flex">
-                    <div>
-                        <label htmlFor="rut" className="block text-sm font-medium leading-6 text-gray-900">Rut</label>
+                    <div className="w-[360px]">
+                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">E-mail</label>
                         <div className="mt-2">
-                            <input {...register('rut')} id="rut" name="rut" type="text" autoComplete="rut"
-                                className="block w-full rounded-md px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            <input {...register('email')} id="email" name="email" type="email" autoComplete="email" required
+                                className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                     </div>
                     <div className="w-full ml-4">
-                        <label htmlFor="genero" className="block text-sm font-medium leading-6 text-gray-900">Genero</label>
-                        <div className="mt-2">
-                            <select {...register('gender')} id="genero" 
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option>Seleccione uno</option>
-                                <option value="M">Masculino</option>
-                                <option value="F">Femenino</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div className="w-full flex">
-                    <div className="w-1/2">
                         <label htmlFor="birthDate" className="block text-sm font-medium leading-6 text-gray-900">Fecha Nacimiento</label>
                         <div className="mt-2">
                             <Datepicker {...register('birthDate')}
@@ -126,13 +107,46 @@ export default function UserForm({ user }) {
                                 onChange={handleFechaNacimientoChange} />
                         </div>
                     </div>
-                    <div className="w-1/2 ml-2">
+                    
+                </div>
+                <div className="flex">
+                    <div className="w-[360px]">
                         <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">Rol</label>
                         <div className="mt-2">
-                            <select {...register('role', { valueAsNumber: true })} id="role" 
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select {...register('role', { valueAsNumber: true })} id="role"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <option>Sin rol</option>
-                                {roles.map(r => (<option value={r.value}>{r.label}</option>))}
+                                {roles.map(r => (<option key={r.value} value={r.value}>{r.label}</option>))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="w-full ml-4">
+                        <label htmlFor="area" className="block text-sm font-medium leading-6 text-gray-900">Área</label>
+                        <div className="mt-2">
+                            <select {...register('area')} id="area"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option>Seleccione una</option>
+                                <option value="QUA">Quant</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex">
+                    <div>
+                        <label htmlFor="rut" className="block text-sm font-medium leading-6 text-gray-900">Rut</label>
+                        <div className="mt-2">
+                            <input {...register('rut')} id="rut" name="rut" type="text" autoComplete="rut"
+                                className="block w-full rounded-md px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        </div>
+                    </div>
+                    <div className="w-full ml-4">
+                        <label htmlFor="genero" className="block text-sm font-medium leading-6 text-gray-900">Genero</label>
+                        <div className="mt-2">
+                            <select {...register('gender')} id="genero"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option>Seleccione uno</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
                             </select>
                         </div>
                     </div>

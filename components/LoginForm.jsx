@@ -2,7 +2,6 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import Image from "next/image";
 import { useState } from "react";
 
 export default function LoginForm() {
@@ -31,7 +30,6 @@ export default function LoginForm() {
         setError("Invalid Credentials");
         return;
       }
-      console.log("RES", res);
       router.replace("modulos");
     } catch (error) {
       console.log(error);
@@ -40,23 +38,24 @@ export default function LoginForm() {
   }
 
   return (
-    <main id="login-background" className="flex min-h-screen flex-col items-center justify-between p-24 bg-coolgray-900">
-      <div className="flex min-h-full flex-col justify-center px-2 py-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <Image className="mx-auto h-30 w-auto" src="/brand.png"
-            width={120} height={120}
-            alt="OCUSTOCUS Logo" />
-          <Image className="mx-auto h-30 w-auto mt-10 opacity-50" src="/titulo.png"
-            width={500} height={300}
-            alt="titulo Logo" />
-          <h2 className="mt-10 text-center text-2xl leading-9 tracking-tight text-gray-900">Ingresa en tu cuenta</h2>
-        </div>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      
+      <div className="area z-0">
+        <ul className="circles">
+          <li></li><li></li><li></li><li></li><li></li>
+          <li></li><li></li><li></li><li></li><li></li>
+        </ul>
       </div>
-
-      <form className="mt-2 sm:mx-auto sm:w-full sm:max-w-sm" onSubmit={handleSubmit(onSubmit, onError)}>
+      <div className="z-10 flex min-h-full flex-col justify-center py-6">
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm">                    
+          <div className="mt-6 text-center text-4xl text-gray-300" data-text="A C T I O N I U M">A C T I O N I U M</div>
+          <img src="/brand.png" alt="Actionium-Brand" className="mx-auto w-40 mt-6" />
+        </div>
+      </div>      
+      <form className="z-10 mt-2 sm:mx-auto sm:w-full sm:max-w-sm" onSubmit={handleSubmit(onSubmit, onError)}>
         <div className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-400">Email address</label>
+            <label htmlFor="email" className="block text-sm font-medium leading-6 text-blue-200">DIRECCIÓN EMAIL</label>
             <div className="mt-2">
               {errors.email && <p className="text-red-500">e-mail requerido</p>}
               <input {...register("email", { required: true })}
@@ -66,7 +65,7 @@ export default function LoginForm() {
 
           <div>
             <div className="flex items-center justify-between">
-              <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-400">Contraseña</label>
+              <label htmlFor="password" className="block text-sm font-medium leading-6 text-blue-200">CONTRASEÑA</label>
               <div className="text-sm">
                 <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">Olvidaste tu contraseña?</a>
               </div>
@@ -81,7 +80,7 @@ export default function LoginForm() {
           {error && <span className="text-red-500">{error}</span>}
           <div>
             <button
-              className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold leading-6 text-indigo-900 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Entrar</button>
+              className="flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Entrar</button>
           </div>
         </div>
       </form>
