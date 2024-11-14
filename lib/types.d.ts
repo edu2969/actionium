@@ -96,8 +96,8 @@ type TaskFormType = {
     estimatedWeight: number,
     startDate: Date | null,
     endDate: Date | null,
-    todos: TodoFormType[] = [],
-    logs: LogFromType[] = [],
+    todos: TodoFormType[],
+    logs: LogFromType[],
 }
 
 type TodoFormType = {

@@ -2,6 +2,8 @@
 import { useEffect } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { AiFillHome } from 'react-icons/ai';
+import { FaRegSave } from 'react-icons/fa';
+import Link from "next/link";
 
 export const ContractForm = ({ contract, setContract }) => {
     const [contractData, setContractData] = useState({
@@ -68,14 +70,14 @@ export const ContractForm = ({ contract, setContract }) => {
                             <label htmlFor="clientId" className="block text-sm font-medium text-gray-700">Cliente</label>
                             <select id="clientId" {...register("clientId")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
                                 <option>Seleccione uno</option>
-                                {clientes && clientes.map(cliente => <option value={cliente._id}>{cliente.name}</option>)}
+                                {clientes && clientes.map(cliente => <option key={`${cliente._id}`} value={cliente._id}>{cliente.name}</option>)}
                             </select>
                         </div>
                         <div className="w-1/2 pl-2 mt-0">
                             <label htmlFor="vendorId" className="block text-sm font-medium text-gray-700">Vendedor</label>
                             <select id="vendorId" {...register("vendorId")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
                                 <option>Seleccione uno</option>
-                                {vendedores && vendedores.map(vendedor => <option value={vendedor._id}>{vendedor.name}</option>)}
+                                {vendedores && vendedores.map(vendedor => <option key={`${vendedor._id}`} value={vendedor._id}>{vendedor.name}</option>)}
                             </select>
                         </div>
                     </div>

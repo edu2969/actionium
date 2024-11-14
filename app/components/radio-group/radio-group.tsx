@@ -39,4 +39,5 @@ const RadioGroup = React.forwardRef((props:IProps, ref)  => {
     </div>
   );
 });
+RadioGroup.displayName = "RadioGroup";
 export default RadioGroup;
