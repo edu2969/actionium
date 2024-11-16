@@ -5,6 +5,8 @@ import Nav from '@/components/Nav'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/utils/authOptions';
 import { NextAuthOptions } from 'next-auth';
+import { orbitron } from '@/app/fonts';
+import Head from 'next/head'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -20,8 +22,12 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions as NextAuthOptions);
   return (    
     <html lang="en">
-      <head/>
-      <body className={inter.className}>      
+      <Head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+      </Head>
+      <body className={`${inter.className} ${orbitron}`}>      
         {children}
         <Nav user={session?.user}></Nav>      
       </body>

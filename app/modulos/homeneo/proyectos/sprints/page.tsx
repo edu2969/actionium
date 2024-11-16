@@ -146,12 +146,13 @@ export default function Sprints() {
                         <div className="w-full flex justify-center">
                             <div className="w-1/2 flex justify-end">
                                 <CircularProgressbar
+                                    className="orbitron"
                                     value={sprints.reduce((acc, sprint) => acc + sprint.progress, 0) / sprints.length}
                                     text={`${(sprints.reduce((acc, sprint) => acc + sprint.progress, 0) / sprints.length).toFixed(0)}%`}
                                     styles={{
                                         root: { width: '204px' },
                                         path: { stroke: `rgba(138,159,208,0.4)` },
-                                        text: { fill: 'rgba(138,159,208)', fontSize: '18px', textAnchor: 'middle', dominantBaseline: 'middle', fontFamily: 'Orbitron' },
+                                        text: { fill: 'rgba(138,159,208)', fontSize: '18px', textAnchor: 'middle', dominantBaseline: 'middle' },
                                         trail: { stroke: '#d6d6d6' },
                                     }}
                                 />
