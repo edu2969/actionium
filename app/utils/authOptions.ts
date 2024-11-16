@@ -1,10 +1,10 @@
-import NextAuth from "next-auth";
+import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectMongoDB } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
     providers: [
       CredentialsProvider({
         name: "credentials",
@@ -13,7 +13,7 @@ export const authOptions = {
           password: { label: "Password", type: "password" }
         },
         async authorize(credentials) {
-          const { email, password } = credentials;
+          const { email, password } = credentials as { email: string; password: string };
   
           try {
             await connectMongoDB();
@@ -30,8 +30,12 @@ export const authOptions = {
             }
   
             return user;
-          } catch (error) {
-            throw new Error(error.message);
+          } catch (error: unknown) {
+            if (error instanceof Error) {
+              throw new Error(error.message);
+            } else {
+              throw new Error('An unknown error occurred');
+            }
           }
         }
       })
@@ -56,5 +60,3 @@ export const authOptions = {
       }
     }
   };
-  
-  export default NextAuth(authOptions);

@@ -6,7 +6,7 @@ import { FaPlus, FaUserCircle } from "react-icons/fa";
 
 export default function Clientes() {
     const [loadingList, setLoadingList] = useState(true);
-    const [clients, setClients] = useState<ClientItemListType>([]);
+    const [clients, setClients] = useState<ClientItemListType[]>([]);
 
     async function getClients() {
         const res = await fetch(`/api/clients`)
@@ -60,7 +60,7 @@ export default function Clientes() {
                         </div>}
                         <div>
                             {clients.map(client => (
-                                <div key={client._id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <div key={client.id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     <div className="w-3/6 flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
                                         {client.imgLogo && <img className="w-10 h-10 rounded-full" src={client.imgLogo} alt={`${client.name} avatar`} />}
                                         {client.imgLogo == "" && <FaUserCircle className="w-10 h-10 text-slate-400" size="1em" />}
@@ -74,7 +74,7 @@ export default function Clientes() {
                                     <div className="w-1/6 px-6 py-4">
                                         <Link href={{
                                             pathname: "/modulos/homeneo/clientes/edicion",
-                                            query: { _id: client._id }
+                                            query: { _id: client.id }
                                         }}>
                                             <span className="font-medium text-blue-600 dark:text-blue-500 hover:underline">EDITAR</span>
                                         </Link>

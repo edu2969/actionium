@@ -89,7 +89,7 @@ export default function Contratos() {
                     </div>
                     <div>
                         {contracts && contracts.map(contract => (
-                            <div key={contract._id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-600">
+                            <div key={contract.id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-600">
                                 <div className="w-2/12 flex items-center pl-4 text-gray-900 whitespace-nowrap dark:text-white">
                                     {contract.clientImg && <img className="w-10 h-10 rounded-full" src={contract.clientImg} alt={`${contract.clientName} avatar`} />}
                                     {contract.clientImg == "" && <FaUserCircle className="w-10 h-10 text-slate-400" size="1em" />}
@@ -112,13 +112,13 @@ export default function Contratos() {
                                 <div className="w-3/12 flex justify-center text-center mt-2 py-2">
                                     <Link href={{
                                         pathname: "/modulos/homeneo/contratos/edicion",
-                                        query: { _id: contract._id }
+                                        query: { _id: contract.id }
                                     }} className="hover:text-blue-400 shadow-xl rounded-xl w-24 h-14 mr-2">
                                         <RiPencilFill size="1.5rem" className="mx-auto" /><span className="text-xs">EDIT</span>
                                     </Link>
                                     <Link href={{
                                         pathname: "/modulos/homeneo/proyectos",
-                                        query: { contractId: contract._id }
+                                        query: { contractId: contract.id }
                                     }} className="hover:text-blue-400 shadow-xl rounded-xl w-24 h-14">
                                         <SiTask size="1.5rem" className="mx-auto" /><span className="text-xs">PROYECTOS</span>
                                     </Link>

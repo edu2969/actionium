@@ -5,6 +5,17 @@ type ClientItemListType = {
     email: string
 }
 
+type ClientFormType = {
+    id: string | undefined,
+    name: string,
+    completeName: string,
+    identificationId: string,
+    identificationType: string,
+    email: string,
+    address: string,
+    imgLogo: string
+}
+
 type UserFormType = {
     id: string | undefined,
     name: string,
@@ -23,6 +34,17 @@ type ContractItemListType = {
     netAmount: number,
     rentability: number,
     termsOfPayment: string
+}
+
+type ContractFormType = {
+    id: string | undefined,
+    title: string,
+    clientId: string | null,
+    vendorId: string | null,
+    status: string,
+    currency: string | null,
+    netAmount: number,
+    termsOfPayment: string | null   
 }
 
 type ProjectItemListType = {

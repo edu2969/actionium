@@ -26,7 +26,7 @@ export default function Tasks() {
     const [loadingList, setLoadingList] = useState(true);
     const initData = useRef(false);
     const [showModal, setShowModal] = useState(false);
-    const [taskToDelete, setTaskToDelete] = useState(0);
+    const [taskToDelete, setTaskToDelete] = useState("");
     const [project, setProject] = useState<ProjectFormType>();
     const params = useSearchParams();
 

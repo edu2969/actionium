@@ -1,19 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from "react-hook-form";
 import { AiOutlineUser } from 'react-icons/ai';
-
-type ClientFormType = {
-    id: string | undefined,
-    name: string,
-    completeName: string,
-    identificationId: string,
-    identificationType: string,
-    email: string,
-    address: string,
-    imgLogo: string
-}
+import { useForm, SubmitHandler } from 'react-hook-form';
 
 export default function EdicionCliente() {
     const [client, setClient] = useState<ClientFormType>({
@@ -36,8 +25,16 @@ export default function EdicionCliente() {
             errors
         },
         handleSubmit,
-    } = useForm();
+    } = useForm<ClientFormType>();
     const [error, setError] = useState("");
+
+    const updateFormValues = (data: { client: ClientFormType }) => {
+        console.log("DATA", data);
+        (Object.keys(data.client) as (keyof ClientFormType)[]).forEach(key => {
+            setValue(key, data.client[key]);
+        });
+        setClient(data.client);
+    };
 
     async function loadClient(id: string) {
         console.log("GETTING CLIENTE..", id, new Date());
@@ -53,13 +50,10 @@ export default function EdicionCliente() {
         }
         const data = await response.json();
         console.log("DATA", data);
-        Object.keys(data.client).map(key => {
-            setValue(key, data.client[key]);
-        })
-        setClient(data.client);
+        updateFormValues(data);
     }
 
-    const onSubmit = async (data: ClientFormType) => {
+    const onSubmit: SubmitHandler<ClientFormType> = async (data) => {
         const id = params.get("_id");
         console.log("SUBMITING...", id, data);
         try {
@@ -116,9 +110,9 @@ export default function EdicionCliente() {
                         </div>
                     </div>
                     <div className="w-1/2">
-                        <label htmlFor="identificatioId" className="block text-sm font-medium leading-6 text-gray-900">RUT</label>
+                        <label htmlFor="identificationId" className="block text-sm font-medium leading-6 text-gray-900">RUT</label>
                         <div className="mt-2">
-                            <input {...register('identificatioId')} id="identificatioId" name="identificatioId" type="text" autoComplete="identificatioId"
+                            <input {...register('identificationId')} id="identificatioId" name="identificatioId" type="text" autoComplete="identificatioId"
                                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6" />
                         </div>
                     </div>
