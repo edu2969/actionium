@@ -4,7 +4,7 @@ const nextConfig = {
         defaultLocale: 'es-CL',
         domains: [
             {
-                domain: 'ocustocus.cl',
+                domain: 'actionium.cl',
                 defaultLocale: 'es-CL',
             }
         ],

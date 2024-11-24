@@ -18,24 +18,11 @@ export const ContractForm = ({ contract, setContract }) => {
         createdAt: contract?.createdAt || "",
     });
     
-    const handleChange = (e) => {
-        setContractData({ ...contractData, [e.target.name]: e.target.value });
-    };
-    
     const handleSubmit = (e) => {
         e.preventDefault();
         setContract(contractData);
-    };    
-
-    const imgLogo = (clientId) => {
-        console.log("CLIENTE", clientes);
-        return clientes.find(cliente => cliente._id == clientId)?.imgLogo;
-    }
-
-    const nombreCliente = (clientId) => {
-        return clientes.find(cliente => cliente._id == clientId)?.name;
-    }
-
+    };
+    
     useEffect(() => {
         if (contract) {
             setContractData({

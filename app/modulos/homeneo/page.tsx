@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { FaUsers } from "react-icons/fa";
 import { SiTask } from "react-icons/si";
 import { FaFileContract } from "react-icons/fa";
+import { TbLockAccess } from 'react-icons/tb';
 
 export default function HomeAdministrador() {
     return (
@@ -29,7 +30,15 @@ export default function HomeAdministrador() {
                     </div>
                     <span>CLIENTES</span>
                 </div>
-            </Link>            
+            </Link>
+            <Link href="/modulos/homeneo/usuarios">
+                <div className="w-full shadow-lg rounded-lg py-4 hover:scale-105 border-2 hover:border-blue-100 mb-4 text-center">
+                    <div className="w-full inline-flex text-center text-slate-500 p-4 relative">
+                        <TbLockAccess className="mx-auto mb-1" size="6rem" />
+                    </div>
+                    <span>Accesos</span>
+                </div>
+            </Link>
         </main>
     );
 }

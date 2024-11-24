@@ -16,7 +16,7 @@ import "dayjs/locale/es";
 import { GiNightSleep } from "react-icons/gi";
 dayjs.locale("es");
 
-export default function Projects() {
+export default function ProjectsClient() {
     const [projects, setProjects] = useState<ProjectItemListType[]>([]);
     const [projectsFiltered, setProjectsFiltered] = useState<ProjectItemListType[]>([])
     const [loadingList, setLoadingList] = useState(true);
@@ -25,29 +25,12 @@ export default function Projects() {
     const params = useSearchParams();
 
     async function getProjects() {
-        const res = await fetch(`/api/projects${params.get("contractId") != null ? ('?contractId=' + params.get("contractId")) : ''}`);
+        const res = await fetch(`/api/projects?clienteId=${params.get('clientId')}`);
         res.json().then((data: ProjectItemListType[] | any) => {
             console.log("DATA", data);
             setProjects(data.projects);
             setLoadingList(false);
         });
-    }
-
-    const onSubmit = async (data: ProjectFormType) => {
-        const id = params.get("_id");
-        console.log("SUBMITING...", id, data);
-        try {
-            await fetch(`/api/projects${id != null ? ('/' + id) : ''}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data)
-            });
-            router.back();
-        } catch (error) {
-            console.log("ERROR", error);
-        }
     }
 
     const nombreEstado = (valor: number) => {
@@ -63,7 +46,6 @@ export default function Projects() {
     useEffect(() => {
         if (!initData.current) {
             initData.current = true;
-            const projectId = params.get("projectId");
             getProjects();
         }
     }, [])

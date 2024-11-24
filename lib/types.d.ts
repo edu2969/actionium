@@ -16,10 +16,24 @@ type ClientFormType = {
     imgLogo: string
 }
 
+type UserListType = {
+    id: string,
+    avatarImg: string | null,
+    clientImg: string | null,
+    email: string,
+    name: string,
+    role: number
+}
+
 type UserFormType = {
     id: string | undefined,
     name: string,
     email: string,
+    password: string,
+    role: string,
+    rut: string,
+    gener: string | null,
+    birthDate: Date,    
     avatarImg: string | null,
 }
 

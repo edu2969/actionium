@@ -1,6 +1,8 @@
 import { connectMongoDB } from "@/lib/mongodb";
-import User from "@/models/user";
 import { NextResponse } from "next/server";
+import User from "@/models/user";
+import bcrypt from "bcryptjs";
+
 
 export async function GET(req, { params }) {
     console.log("getById...", params);
@@ -13,8 +15,8 @@ export async function GET(req, { params }) {
 
 export async function POST(req, { params }) {
     const body = await req.json();
-    console.log("Update...", body, params);
-    const userUpdated = await User.findByIdAndUpdate(params.id, {
+    console.log("Update...", body, params);    
+    const userData = {
         name: body.name,
         email: body.email,
         role: body.role,
@@ -22,10 +24,12 @@ export async function POST(req, { params }) {
         gender: body.gender,
         birthDate: body.birthDate ? new Date(body.birthDate) : null,
         avatarImg: body.avatarImg,
-        area: body.area,
-    }, {
-        new: true
-    });
+        clientId: body.clientId,
+    }
+    if(params.id || (body.repassword == body.password)) { 
+        userData.password = await bcrypt.hash(body.password, 10);
+    }    
+    const userUpdated = await User.findByIdAndUpdate(params.id, userData);
     return userUpdated ? NextResponse.json(userUpdated) : NextResponse.json(error.message, {
         status: 404,
     })

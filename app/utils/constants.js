@@ -1,6 +1,7 @@
 export const USER_ROLE = {
     neo: 1,
     manager: 10,
+    client: 20,
 }
 
 export const CONTRACT_STATUS = {

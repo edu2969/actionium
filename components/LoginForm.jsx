@@ -67,7 +67,7 @@ export default function LoginForm() {
             <div className="flex items-center justify-between">
               <label htmlFor="password" className="block text-sm font-medium leading-6 text-blue-200">CONTRASEÑA</label>
               <div className="text-sm">
-                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">Olvidaste tu contraseña?</a>
+                <a href="#" className="font-semibold text-indigo-300 hover:text-indigo-900">Olvidaste tu contraseña?</a>
               </div>
             </div>
             <div className="mt-2">
