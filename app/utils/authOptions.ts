@@ -52,7 +52,6 @@ export const authOptions: NextAuthOptions = {
         if (user) {
           token.id = user.id;
           token.role = user.role;
-          token.avatarImg = user.avatarImg;
         }
         return token;
       },
