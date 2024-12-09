@@ -33,13 +33,12 @@ export default function Sprints() {
             const sprints: SprintView[] = [];
             let currentSprint: SprintItemView[] = [];
             let currentSprintHours = 0;
-            let sprintStartDate = dayjs(tasks[0].startDate);
             let totalHours = 0;
     
             tasks.forEach((task: TaskItemListType) => {
                 const taskWeight = project?.status === PROJECT_STATUS.defining ? task.estimatedWeight : task.weight;
                 totalHours += taskWeight;
-    
+                let sprintStartDate = dayjs(task.startDate);            
                 if (currentSprintHours + taskWeight > 40) {
                     // Close current sprint and start a new one
                     if (currentSprint.length > 0) {
@@ -78,7 +77,7 @@ export default function Sprints() {
                 sprints.push({
                     lastUpdate: new Date(),
                     endDate: null,
-                    estimatedEndDate: sprintStartDate.add(totalHours / 40, 'week').toDate(),
+                    estimatedEndDate: dayjs(tasks[0].startDate).add(1, 'week').toDate(),
                     progress: currentSprint.reduce((acc, t) => acc + t.percentaje, 0) / currentSprint.length || 0,
                     sprints: currentSprint,
                 });
@@ -128,7 +127,7 @@ export default function Sprints() {
                                     </p>
                                 </div>
                                 <div className="text-center text-4xl text-gray-300 mb-4 orbitron">
-                                    {sprint.progress}<small>%</small>
+                                    {Math.round(sprint.progress)}<small>%</small>
                                 </div>
                                 <div className="w-full bg-ship-cove-300 h-4 dark:bg-gray-700 rounded-full">
                                     <div
@@ -147,7 +146,7 @@ export default function Sprints() {
                             <div className="w-1/2 flex justify-end">
                                 <CircularProgressbar
                                     className="orbitron"
-                                    value={sprints.reduce((acc, sprint) => acc + sprint.progress, 0) / sprints.length}
+                                    value={Number((sprints.reduce((acc, sprint) => acc + sprint.progress, 0) / sprints.length).toFixed(0))}
                                     text={`${(sprints.reduce((acc, sprint) => acc + sprint.progress, 0) / sprints.length).toFixed(0)}%`}
                                     styles={{
                                         root: { width: '204px' },
@@ -161,7 +160,7 @@ export default function Sprints() {
                                 <p className="text-md text-gray-500">
                                     Fecha de término</p>
                                 <p className="text-lg text-gray-600 uppercase">
-                                    {(sprints?.length > 0 && sprints[0].endDate != null) ? dayjs(sprints[0].endDate).format('DD/MMM/YYYY') : (sprints?.length > 0 ? dayjs(sprints[0].estimatedEndDate).format('DD/MMM/YYYY') : '--/--/--')}
+                                    {(sprints?.length > 0 && sprints[sprints.length - 1].estimatedEndDate != null) ? dayjs(sprints[sprints.length - 1].estimatedEndDate).format('DD/MMM/YYYY') : (sprints?.length > 0 ? dayjs(sprints[sprints.length - 1].estimatedEndDate).format('DD/MMM/YYYY') : '--/--/--')}
                                 </p>
                                 <p className="text-xs text-gray-500 mt-4">
                                     Última actualización</p>
