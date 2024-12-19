@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
 import { PROJECT_STATUS } from "@/app/utils/constants";
-import SprintView from "@/app/components/SprintView";
+import SprintView from "@/components/SprintView";
 
 export default function Sprints() {
     const [sprints, setSprints] = useState<SprintView[]>([]);
@@ -60,8 +60,6 @@ export default function Sprints() {
                     taskIndexTo: taskEndDate.format('DD/MMM/YYYY'),
                     taskShortDescription: taskShortDescription,
                     percentaje: task.progress ?? 0,
-                    from: taskStartDate.toDate(),
-                    to: taskEndDate.toDate(),
                 });
     
                 currentSprintHours += taskWeight;
