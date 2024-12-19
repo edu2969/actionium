@@ -101,8 +101,6 @@ type SprintItemView = {
     taskIndexTo: string,
     taskShortDescription: string,
     percentaje: number,
-    from: Date,
-    to: Date,
 }
 
 type TaskItemListType = {

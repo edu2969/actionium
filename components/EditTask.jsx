@@ -55,7 +55,6 @@ export default function EditTask({ params, router }) {
 
     async function loadTask(id) {
         if (!id) return;
-        console.log(">>>>>>> GETTING TASK", id, `/api/tasks/${id}`);
         const response = await fetch(`/api/tasks/${id}`, {
             method: "GET",
             headers: {
@@ -66,7 +65,6 @@ export default function EditTask({ params, router }) {
             console.log("No se pudo obtener la tarea");
         }
         const data = await response.json();
-        console.log("DATA", data);
         Object.keys(data.task).forEach(key => {
             if (data.task[key] != null && (key === 'startDate' || key === 'endDate')) {
                 const formattedDate = dayjs(data.task[key]).tz('America/Santiago').format("YYYY-MM-DD HH:mm");
@@ -89,7 +87,7 @@ export default function EditTask({ params, router }) {
         data.logs = task.logs;
         data.weight = task.weight;
         data.endDate = task.endDate;
-        console.log("POSTING", data);
+        console.log("DATA", data);
         try {
             await fetch(`/api/tasks/${params.get("_id") ?? ''}`, {
                 method: "POST",
@@ -133,6 +131,10 @@ export default function EditTask({ params, router }) {
         }
     };
 
+    const collaboratorImgUrl = (collaboratorId) => {
+        return users.find(user => user.id === collaboratorId)?.avatarImg ?? "/profiles/neo.jpg";
+    }
+
     useEffect(() => {
         async function loadData() {
             await Promise.all([loadUsers()]);
@@ -163,10 +165,10 @@ export default function EditTask({ params, router }) {
                         {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
                     </div>
                     <div className="w-3/12 pr-2">
-                        <label htmlFor="asignedTo" className="block text-sm font-medium text-gray-700">Asignado a</label>
-                        <select id="asignedTo" {...register("asignedTo")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
-                            <option>SELECCIONE UNO</option>
-                            {users.map((user) => <option key={user._id} value={user._id}>{user.name}</option>)}
+                        <label htmlFor="assignedTo" className="block text-sm font-medium text-gray-700">Asignado a</label>
+                        <select id="assignedTo" {...register("assignedTo")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
+                            <option value="">SELECCIONE UNO</option>
+                            {users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}
                         </select>
                     </div>
                     <div className="w-1/2 pr-2">
@@ -355,7 +357,7 @@ export default function EditTask({ params, router }) {
                                                     className="w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm mr-1"
                                                 ><option>SELECCIONE UNO</option>
                                                     {users.map(user => (
-                                                        <option key={user._id} value={user._id}>{user.name}</option>
+                                                        <option key={user.id} value={user.id}>{user.name}</option>
                                                     ))}
                                                 </select>
                                                 <input
@@ -402,10 +404,10 @@ export default function EditTask({ params, router }) {
                                     <>
                                         <div className="w-full">
                                             <div className="flex items-center">
-                                                {users.find(user => user._id === log.collaboratorId)?.avatarImg == null ? (
+                                                {users.find(user => user.id === log.collaboratorId)?.avatarImg == null ? (
                                                     <FaUserCircle size="2rem" className="w-10 h-10 text-slate-400" />
                                                 ) : (
-                                                    <img src={users.find(user => user._id === log.collaboratorId)?.avatarImg} className="w-10 h-10 rounded-full" />
+                                                    <img src={collaboratorImgUrl(log.collaboratorId)} className="w-10 h-10 rounded-full" />
                                                 )}
                                                 <div className="w-full ml-2">
                                                     <div className="flex justify-between items-center">
