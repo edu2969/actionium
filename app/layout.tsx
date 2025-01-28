@@ -22,7 +22,7 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions as NextAuthOptions);
   return (    
     <html lang="en">
-      <body className={`${inter.className} ${orbitron}`}>      
+      <body className={`${inter.className} ${orbitron} pt-8`}>
         {children}
         <Nav user={session?.user}></Nav>      
       </body>

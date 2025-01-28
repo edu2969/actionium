@@ -10,6 +10,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import Link from 'next/link';
 import { AiFillHome } from 'react-icons/ai';
+import { TASK_STATUS } from '@/app/utils/constants';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -133,6 +134,34 @@ export default function EditTask({ params, router }) {
 
     const collaboratorImgUrl = (collaboratorId) => {
         return users.find(user => user.id === collaboratorId)?.avatarImg ?? "/profiles/neo.jpg";
+    }
+
+    const estimatedEndDate = (startDate, weight) => {
+        if(startDate == null) return "INCIERTO";
+        let endDate = dayjs(startDate);
+        let totalHours = weight;
+        let hoursRemaining = totalHours;
+
+        while (hoursRemaining > 0) {
+            if (endDate.day() === 0 || endDate.day() === 6) { // Skip weekends
+                endDate = endDate.add(1, 'day').hour(8).minute(0);
+                continue;
+            }
+            if (endDate.hour() >= 8 && endDate.hour() < 13) { // Morning hours
+                const availableHours = Math.min(13 - endDate.hour(), hoursRemaining);
+                endDate = endDate.add(availableHours, 'hour');
+                hoursRemaining -= availableHours;
+            } else if (endDate.hour() >= 13 && endDate.hour() < 14) { // Lunch break
+                endDate = endDate.hour(14).minute(0); // Move to afternoon session
+            } else if (endDate.hour() >= 14 && endDate.hour() < 17) { // Afternoon hours
+                const availableHours = Math.min(17 - endDate.hour(), hoursRemaining);
+                endDate = endDate.add(availableHours, 'hour');
+                hoursRemaining -= availableHours;
+            } else { // Outside working hours
+                endDate = endDate.add(1, 'day').hour(8).minute(0); // Move to next day morning
+            }
+        }
+        return endDate.format("DD/MMM/YY HH:mm");
     }
 
     useEffect(() => {
@@ -322,7 +351,12 @@ export default function EditTask({ params, router }) {
                     </div>
                     <div className="w-4/12 pl-2">
                         <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">Fecha término</label>
-                        <p className="uppercase text-sm mt-3">{dayjs(task.endDate).format("DD/MMM/YY HH:mm")}</p>
+                        <p className="uppercase text-sm mt-3">
+                            {task.status == TASK_STATUS.defining 
+                                ? estimatedEndDate(task.startDate, task.weight)
+                                : dayjs(task.endDate).format("DD/MMM/YY HH:mm")
+                            }
+                        </p>
                     </div>
 
                     <div className="w-full shadow-lg p-3 mt-6">

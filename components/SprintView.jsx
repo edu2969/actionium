@@ -73,7 +73,7 @@ export default function RegisterForm({ project, sprints, loader }) {
                                 <p className="text-md text-gray-500">
                                     Fecha de término</p>
                                 <p className="text-lg text-gray-600 uppercase">
-                                    {(sprints?.length > 0 && sprints[sprints.length - 1].estimatedEndDate != null) ? dayjs(sprints[sprints.length - 1].estimatedEndDate).format('DD/MMM/YYYY') : (sprints?.length > 0 ? dayjs(sprints[sprints.length - 1].estimatedEndDate).format('DD/MMM/YYYY') : '--/--/--')}
+                                    {(sprints?.length > 0 && sprints[sprints.length - 1].taskIndexTo != null) ? dayjs(sprints[sprints.length - 1].taskIndexTo).format('DD/MMM/YYYY') : (sprints?.length > 0 ? dayjs(sprints[sprints.length - 1].taskIndexTo).format('DD/MMM/YYYY') : '--/--/--')}
                                 </p>
                                 <p className="text-xs text-gray-500 mt-4">
                                     Última actualización</p>
