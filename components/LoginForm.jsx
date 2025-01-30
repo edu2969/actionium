@@ -38,15 +38,14 @@ export default function LoginForm() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      
+    <main className="flex min-h-screen flex-col items-center justify-between px-24 pt-20 pb-28">
       <div className="area z-0">
         <ul className="circles">
           <li></li><li></li><li></li><li></li><li></li>
           <li></li><li></li><li></li><li></li><li></li>
         </ul>
       </div>
-      <div className="z-10 flex min-h-full flex-col justify-center py-6">
+      <div className="z-10 flex min-h-full flex-col justify-center pb-6">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">                    
           <div className="mt-6 text-center text-4xl text-gray-300" data-text="A C T I O N I U M">A C T I O N I U M</div>
           <img src="/brand.png" alt="Actionium-Brand" className="mx-auto w-40 mt-6" />

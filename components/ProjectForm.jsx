@@ -126,7 +126,7 @@ export default function ProjectForm() {
     }, []);
 
     return (<main className="w-full h-screen">
-        <div className="py-14 w-full h-screen overflow-y-scroll">
+        <div className="py-8 w-full h-screen overflow-y-scroll">
             <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 pt-4 mx-10 bg-white dark:bg-gray-900">
                 <div className="flex items-center space-x-4 text-ship-cove-800">
                     <Link href="/modulos">

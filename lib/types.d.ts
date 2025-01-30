@@ -99,7 +99,8 @@ type SprintItemView = {
     title: string,
     taskIndexFrom: string,
     taskIndexTo: string,
-    taskShortDescription: string,
+    startDate: Date,
+    endDate: Date,
     percentaje: number,
 }
 
@@ -115,6 +116,14 @@ type TaskItemListType = {
     startDate: Date,
     endDate: Date,
     progress: number,
+    updatedAt: Date,
+    todos: TodoType[],
+}
+
+type TodoType = {
+    finishedAt: Date | null,
+    title: string,
+    hours: number,
 }
 
 type TaskFormType = {

@@ -7,8 +7,8 @@ export default function Page() {
     const router = useRouter();
 
     return (
-        <main className="p-6 mt-8 h-screen overflow-y-scroll">
+        
             <EditTask params={params} router={router} />
-        </main>
+        
     );
 }

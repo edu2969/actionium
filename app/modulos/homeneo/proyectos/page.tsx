@@ -69,7 +69,7 @@ export default function Projects() {
     }, [])
 
     return (
-        <main className="p-6 mt-8 h-screen overflow-y-scroll">
+        <main className="px-6 py-4 h-screen overflow-y-scroll">
             <div className="w-full p-6">
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-2">
                     <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">

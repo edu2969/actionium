@@ -21,8 +21,8 @@ export default async function RootLayout({
 }) {
   const session = await getServerSession(authOptions as NextAuthOptions);
   return (    
-    <html lang="en">
-      <body className={`${inter.className} ${orbitron} pt-8`}>
+    <html lang="es_CL">
+      <body className={`${inter.className} ${orbitron}`}>
         {children}
         <Nav user={session?.user}></Nav>      
       </body>

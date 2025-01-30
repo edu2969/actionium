@@ -7,12 +7,13 @@ import { AiFillHome } from "react-icons/ai";
 import { IoIosArrowForward } from "react-icons/io";
 import { useRouter, useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
+import { RiTimerFlashLine } from "react-icons/ri";
 
-export default function RegisterForm({ project, sprints, loader }) {    
+export default function RegisterForm({ project, view, loader }) {    
     const router = useRouter();
     const params = useSearchParams();
 
-    return (<main className="pt-6 px-6 pb-16 mt-12 h-screen overflow-y-auto">
+    return (<main className="pt-10 px-6 pb-16 h-screen overflow-y-auto">
             <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
                 <div className="flex items-start space-x-4 text-ship-cove-800 pt-4">
                     <Link href="/modulos">
@@ -26,31 +27,35 @@ export default function RegisterForm({ project, sprints, loader }) {
                     <span className="text-sm font-semibold leading-6 text-gray-700 dark:text-gray-300">SPRINTS</span>
                 </div>
             </div>
-            {sprints.length > 0 ? <>
-                <div className="flex flex-wrap justify-center gap-4 uppercase">
-                    {sprints.map((sprint, index) => (
+            {view && view.sprints.length > 0 ? <>
+                <div className="flex flex-wrap justify-center gap-2 uppercase">
+                    {view.sprints.map((sprint, index) => (
                         <div key={index} className="w-[180px] m-2">
-                            <div className="p-4 bg-ship-cove-800 rounded-lg shadow-lg">
-                                <h3 className="text-center text-sm font-semibold text-gray-200">
+                            <div className={`px-2 bg-${sprint.percentaje == 100 ? 'green' : 'ship-cove'}-200 rounded-lg shadow-lg pb-2`}>
+                                <div className="bg-green-600 text-sm font-semibold text-gray-200 pl-2 max-w-24 rounded-lg rounded-bl-none rounded-tr-none -ml-2">
                                     Sprint {String(index + 1).padStart(2, '0')}
-                                </h3>
-                                <div className="flex justify-center min-h-20 max-h-20 overflow-hidden text-ellipsis">
-                                    <p className="text-center text-xs text-gray-400 mt-2 mb-2">
-                                        {sprint.sprints.map(task => task.taskShortDescription).join(', ')}
+                                </div>
+                                <div className="min-h-20 max-h-20 w-[160px] overflow-hidden text-ellipsis">
+                                    <p className="text-xs text-gray-800 font-bold mt-2 mb-0">
+                                        {sprint.title}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-0 mb-2">
+                                        {sprint.taskIndexTo}
                                     </p>
                                 </div>
-                                <div className="text-center text-4xl text-gray-300 mb-4 orbitron">
-                                    {Math.round(sprint.progress)}<small>%</small>
+                                <div className="text-center text-4xl text-gray-700 mb-0 orbitron">
+                                    {Math.round(sprint.percentaje)}<small>%</small>
                                 </div>
-                                <div className="w-full bg-ship-cove-300 h-4 dark:bg-gray-700 rounded-full">
+                                <div className="w-full bg-ship-cove-800 h-4 dark:bg-gray-700 rounded-full">
                                     <div
-                                        className="bg-ship-cove-400 h-4 rounded-full"
-                                        style={{ width: `${sprint.progress}%` }}
+                                        className="bg-ship-cove-800 h-4 rounded-full"
+                                        style={{ width: `${sprint.percentaje}%` }}
                                     ></div>
                                 </div>
                             </div>
-                            <p className="text-center text-xs text-gray-500 mt-4">
-                                {sprint.sprints[0].taskIndexFrom} - {sprint.sprints[sprint.sprints.length - 1].taskIndexTo}
+                            <p className="flex justify-center text-xs text-gray-700 mt-2">
+                                <RiTimerFlashLine size="1.2em" className="mr-1" />
+                                {dayjs(sprint.estimatedEndDate).format('DD/MMM/YYYY HH:MM')}
                             </p>
                         </div>
                     ))}
@@ -59,8 +64,8 @@ export default function RegisterForm({ project, sprints, loader }) {
                             <div className="w-1/2 flex justify-end">
                                 <CircularProgressbar
                                     className="orbitron"
-                                    value={Number((sprints.reduce((acc, sprint) => acc + sprint.progress, 0) / sprints.length).toFixed(0))}
-                                    text={`${(sprints.reduce((acc, sprint) => acc + sprint.progress, 0) / sprints.length).toFixed(0)}%`}
+                                    value={view ? view.progress.toFixed(0) : 0}
+                                    text={`${view ? view.progress.toFixed(0) : 0}%`}
                                     styles={{
                                         root: { width: '204px' },
                                         path: { stroke: `rgba(138,159,208,0.4)` },
@@ -69,18 +74,18 @@ export default function RegisterForm({ project, sprints, loader }) {
                                     }}
                                 />
                             </div>
-                            <div className="w-1/2 mt-14 ml-6 uppercase">
+                            {view && <div className="w-1/2 mt-14 ml-6 uppercase">
                                 <p className="text-md text-gray-500">
                                     Fecha de término</p>
                                 <p className="text-lg text-gray-600 uppercase">
-                                    {(sprints?.length > 0 && sprints[sprints.length - 1].taskIndexTo != null) ? dayjs(sprints[sprints.length - 1].taskIndexTo).format('DD/MMM/YYYY') : (sprints?.length > 0 ? dayjs(sprints[sprints.length - 1].taskIndexTo).format('DD/MMM/YYYY') : '--/--/--')}
+                                    {dayjs(view.estimatedEndDate).format('DD/MMM/YYYY HH:mm')}
                                 </p>
                                 <p className="text-xs text-gray-500 mt-4">
                                     Última actualización</p>
                                 <p className="text-md text-gray-500">
-                                    {sprints?.length > 0 ? dayjs(sprints[0].lastUpdate).format('DD/MMM/YYYY') : '--/--/--'}
+                                    {view.sprints?.length > 0 ? dayjs(view.sprints[0].lastUpdate).format('DD/MMM/YYYY HH:mm') : '--/--/--'}
                                 </p>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
