@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { PROJECT_STATUS, TASK_STATUS } from "@/app/utils/constants";
 import SprintView from "@/components/SprintView";
 import dayjs from "dayjs";
 
