@@ -13,7 +13,7 @@ export default function Nav({ user }: { user: User | null}) {
         <div className={`w-screen fixed top-0 left-0 ${path === '/' ? 'hidden' : 'visible'}`}>
             <div className="absolute w-full">
                 <div className="w-full flex">
-                    <AiOutlineMenu size="1.7rem" className="m-4 text-slate-700 cursor-pointer"
+                    <AiOutlineMenu size="1.7rem" className="ml-6 mt-4 text-slate-700 cursor-pointer"
                         onClick={() => setMenuActivo(true)} />
                     <div className="w-full flex justify-end mr-4">
                         <Link href={`/modulos`} onClick={() => setMenuActivo(false)}>

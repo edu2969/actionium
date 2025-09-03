@@ -1,6 +1,5 @@
-import ProjectForm from "@/components/ProjectForm";
-import { useRouter } from 'next/navigation';
+import EditProject from "@/components/projects/EditProject";
 
 export default function EdicionProyectoPage() {
-    return <ProjectForm/>
+    return <EditProject/>
 }

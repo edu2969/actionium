@@ -41,7 +41,7 @@ export default function EdicionContrato() {
         setContrato(data.contract);
     };
 
-    async function loadContrato(id: string) {
+    async function loadContrato(id: string | null) {
         console.log("GETTING CONTRATO..", id, new Date());
         if (id == null) return;
         const response = await fetch(`/api/contracts/${id}`, {
@@ -111,7 +111,7 @@ export default function EdicionContrato() {
     useEffect(() => {
         async function loadData() {
             await Promise.all([loadClientes(), loadVendedores()]);
-            const id = params.get("_id") ?? "0";
+            const id = params.get("_id") ?? null;
             loadContrato(id);
         }
         loadData();

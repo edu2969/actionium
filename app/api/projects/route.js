@@ -58,7 +58,7 @@ export async function GET(req) {
             projectType: project.projectType,
             title: project.title,
             status: project.status,
-            kickOff: project.kickOff,
+            kickOff: project.kickOff ?? null,
             end: project.end,
             progress: tasks.length > 0 ? tasks.reduce((acc, task) => acc + (task.progress ?? 0), 0) / tasks.length : 0,
             rentability: project.rentability ?? 0,
