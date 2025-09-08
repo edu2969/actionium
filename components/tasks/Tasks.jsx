@@ -97,7 +97,7 @@ export default function Tasks() {
         <main className="h-screen">
             <div className="w-full px-6 py-8">
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-2">
-                    <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
+                    <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-6 bg-white dark:bg-gray-900">
                         <div className="fixed top-0 left-0 flex px-24 pt-4 w-full items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
                             <div className="flex items-start space-x-4 text-ship-cove-800">
                                 <Link href="/modulos">
@@ -139,7 +139,7 @@ export default function Tasks() {
                             </div>
                         </div>
                     </div>}
-                    <div className="w-full h-[calc(100vh-6rem)] overflow-y-scroll">
+                    <div className="w-full h-[calc(100vh-7rem)] overflow-y-scroll">
                         {tasks && tasks.map(task => (
                             <div key={task.id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-600">
                                 <div className="w-8/12 px-2 flex items-center">

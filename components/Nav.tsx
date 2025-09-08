@@ -10,17 +10,17 @@ export default function Nav({ user }: { user: User | null}) {
     const [menuActivo, setMenuActivo] = useState(false);    
     const path = usePathname();
     return (
-        <div className={`w-screen fixed top-0 left-0 ${path === '/' ? 'hidden' : 'visible'}`}>
-            <div className="absolute w-full">
-                <div className="w-full flex">
-                    <AiOutlineMenu size="1.7rem" className="ml-6 mt-4 text-slate-700 cursor-pointer"
+        <div className={`w-full absolute top-0 left-0 ${path === '/' ? 'hidden' : 'visible'}`}>
+            <div className="absolute">
+                <div className="flex">
+                    <AiOutlineMenu size="1.7rem" className="m-4 text-slate-800 cursor-pointer"
                         onClick={() => setMenuActivo(true)} />
-                    <div className="w-full flex justify-end mr-4">
-                        <Link href={`/modulos`} onClick={() => setMenuActivo(false)}>
-                            <AiFillHome size="1.7rem" className="m-4 text-slate-700 justify-end cursor-pointer" />
-                        </Link>
-                    </div>
                 </div>
+            </div>
+            <div className="absolute right-0">                
+                <Link href={`/modulos`} onClick={() => setMenuActivo(false)}>
+                    <AiFillHome size="1.7rem" className="mt-4 mr-4 text-slate-800 justify-end cursor-pointer" />
+                </Link>                
             </div>
             <div className={`min-w-2xl min-h-full z-50 absolute transition-all bg-[#9cb6dd] p-6 ${menuActivo ? 'left-0' : '-left-full'}`}>
                 <AiOutlineClose size="2rem" className="text-slate-700 m-auto cursor-pointer absolute top-4 right-4"
