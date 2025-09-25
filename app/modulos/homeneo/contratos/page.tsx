@@ -13,18 +13,36 @@ import { GiNightSleep } from "react-icons/gi";
 
 export default function Contratos() {
     const [contracts, setContracts] = useState<ContractItemListType[]>([]);
+    const [clients, setClients] = useState<ClientItemListType[]>([]);
+    const [selectedClients, setSelectedClients] = useState<string[]>([]);
     const [loadingList, setLoadingList] = useState(true);
     const initData = useRef(false);
     const params = useSearchParams();
 
+    async function getClients() {
+        const res = await fetch('/api/clients');
+        const data = await res.json();
+        setClients(data.clients);
+    }
+
     async function getContracts() {
-        const res = await fetch(`/api/contracts`)
+        const clientIds = selectedClients.length > 0 ? selectedClients.join(',') : '';
+        const res = await fetch(`/api/contracts${clientIds ? `?clientIds=${clientIds}` : ''}`)
         res.json().then((data: ContractItemListType[] | any) => {
             console.log("DATA", data);
             setContracts(data.contracts);
             setLoadingList(false);
         });
     }
+
+    const toggleClient = (clientId: string) => {
+        setSelectedClients(prev => {
+            const newSelected = prev.includes(clientId) 
+                ? prev.filter(id => id !== clientId)
+                : [...prev, clientId];
+            return newSelected;
+        });
+    };
 
     const nombreEstado = (valor: number) => {
         return Object.keys(CONTRACT_STATUS).find(key => CONTRACT_STATUS[key as keyof typeof CONTRACT_STATUS] === valor)?.toUpperCase();
@@ -34,10 +52,17 @@ export default function Contratos() {
 
     useEffect(() => {
         if (!initData.current) {
-            initData.current = true
+            initData.current = true;
+            getClients();
             getContracts();
         }
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (initData.current) {
+            getContracts();
+        }
+    }, [selectedClients]);
 
     return (
         <main className="p-6 mt-8 h-screen overflow-y-scroll">            
@@ -71,6 +96,32 @@ export default function Contratos() {
                             </button>
                         </Link>
                     </div>
+
+                    {/* Filtro de clientes */}
+                    <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                        <h3 className="text-sm font-medium text-gray-700 mb-2">Filtrar por cliente:</h3>
+                        <div className="flex flex-wrap gap-2">
+                            {clients.map(client => (
+                                <button
+                                    key={client.id}
+                                    onClick={() => toggleClient(client.id)}
+                                    className={`flex items-center px-3 py-2 rounded-lg border transition-colors ${
+                                        selectedClients.includes(client.id)
+                                            ? 'bg-blue-100 border-blue-300 text-blue-800'
+                                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    {client.imgLogo ? (
+                                        <img className="w-6 h-6 rounded-full mr-2" src={client.imgLogo} alt={`${client.name} logo`} />
+                                    ) : (
+                                        <FaUserCircle className="w-6 h-6 text-slate-400 mr-2" />
+                                    )}
+                                    <span className="text-xs">{client.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <div className="w-full text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <div className="flex">
@@ -89,7 +140,7 @@ export default function Contratos() {
                     </div>
                     <div>
                         {contracts && contracts.map(contract => (
-                            <div key={contract.id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-600">
+                            <div key={contract._id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-600">
                                 <div className="w-2/12 flex items-center pl-4 text-gray-900 whitespace-nowrap dark:text-white">
                                     {contract.clientImg && <img className="w-10 h-10 rounded-full" src={contract.clientImg} alt={`${contract.clientName} avatar`} />}
                                     {contract.clientImg == "" && <FaUserCircle className="w-10 h-10 text-slate-400" size="1em" />}
@@ -112,13 +163,13 @@ export default function Contratos() {
                                 <div className="w-3/12 flex justify-center text-center mt-2 py-2">
                                     <Link href={{
                                         pathname: "/modulos/homeneo/contratos/edicion",
-                                        query: { _id: contract.id }
+                                        query: { _id: contract._id }
                                     }} className="hover:text-blue-400 shadow-xl rounded-xl w-24 h-14 mr-2">
                                         <RiPencilFill size="1.5rem" className="mx-auto" /><span className="text-xs">EDIT</span>
                                     </Link>
                                     <Link href={{
                                         pathname: "/modulos/homeneo/proyectos",
-                                        query: { contractId: contract.id }
+                                        query: { contractId: contract._id }
                                     }} className="hover:text-blue-400 shadow-xl rounded-xl w-24 h-14">
                                         <SiTask size="1.5rem" className="mx-auto" /><span className="text-xs">PROYECTOS</span>
                                     </Link>

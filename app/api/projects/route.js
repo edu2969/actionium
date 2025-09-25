@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/utils/authOptions";
 import { PROJECT_STATUS, USER_ROLE } from "@/app/utils/constants";
+import mongoose from "mongoose";
 
 export async function GET(req) {
     const session = await getServerSession(authOptions);
@@ -27,15 +28,23 @@ export async function GET(req) {
 
     let query = {};
     if (userRole === USER_ROLE.neo) {
-        query = { status: { $ne: PROJECT_STATUS.closed } };
+        if (contractId) {
+            query = { contractId: new mongoose.Types.ObjectId(contractId), status: { $ne: PROJECT_STATUS.closed } };
+        } else if (clientId) {
+            const contracts = await Contract.find({ clientId: new mongoose.Types.ObjectId(clientId) });
+            const contractIds = contracts.map(contract => contract._id);
+            query = { contractId: { $in: contractIds }, status: { $ne: PROJECT_STATUS.closed } };
+        } else {
+            query = { status: { $ne: PROJECT_STATUS.closed } };
+        }
     } else if (userRole === USER_ROLE.client) {
         const contracts = await Contract.find({ clientId: userClientId });
         const contractIds = contracts.map(contract => contract._id);
         query = { contractId: { $in: contractIds }, status: { $ne: PROJECT_STATUS.closed } };
     } else if (contractId) {
-        query = { contractId, status: { $ne: PROJECT_STATUS.closed } };
+        query = { contractId: new mongoose.Types.ObjectId(contractId), status: { $ne: PROJECT_STATUS.closed } };
     } else if (clientId) {
-        const contracts = await Contract.find({ clientId });
+        const contracts = await Contract.find({ clientId: new mongoose.Types.ObjectId(clientId) });
         const contractIds = contracts.map(contract => contract._id);
         query = { contractId: { $in: contractIds }, status: { $ne: PROJECT_STATUS.closed } };
     } else {
