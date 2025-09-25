@@ -38,7 +38,7 @@ type UserFormType = {
 }
 
 type ContractItemListType = {
-    id: string,
+    _id: string,
     clientImg: string,
     clientName: string,
     identifier: number,
