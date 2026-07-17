@@ -3,7 +3,7 @@ import { FaUsers } from "react-icons/fa";
 import { SiTask } from "react-icons/si";
 import { FaFileContract } from "react-icons/fa";
 
-export default function HomeAdministrador() {
+export default function HomeNeoPage() {
     return (
         <main className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 p-2 md:p-6 max-w-lg mx-auto mt-14">
             <Link href="/modulos/homeneo/proyectos">

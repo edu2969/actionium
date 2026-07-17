@@ -1,18 +1,35 @@
 'use client'
+
+import { use, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link'
 import { useState } from 'react';
 import { AiFillHome, AiOutlineMenu, AiOutlineClose, AiFillAliwangwang, AiOutlineLogout } from 'react-icons/ai'
-import { usePathname } from 'next/navigation'
-import { User } from 'next-auth';
+import { usePathname, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react';
 
-export default function Nav({ user }: { user: User | null}) {
+export default function Nav() {
+    const [role, setRole] = useState(0);    
     const [menuActivo, setMenuActivo] = useState(false);    
     const path = usePathname();
+    const router = useRouter();
+    const { data: session, status } = useSession();
+    
+    useEffect(() => {
+        if(status === 'loading') return;
+        if(session && session.user && session.user?.role) {
+            setRole(session.user.role);            
+        }
+    }, [session, setRole, status]);
+
+    useEffect(() => {
+        console.log("ROLE", role);
+    }, [role]);
+
     return (
         <div className={`w-screen fixed top-0 left-0 ${path === '/' ? 'hidden' : 'visible'}`}>
             <div className="absolute w-full">
-                <div className="w-full bg-[#839dd1] flex">
+                <div className="w-full bg-transparent flex">
                     <AiOutlineMenu size="1.7rem" className="m-4 text-white cursor-pointer"
                         onClick={() => setMenuActivo(true)} />
                     <div className="w-full flex justify-end">
@@ -33,7 +50,12 @@ export default function Nav({ user }: { user: User | null}) {
                         </div>
                     </Link>
                     <button className="min-w-2xl flex hover:bg-white hover:text-[#9cb6dd] rounded-md p-2"
-                        onClick={() => signOut({ callbackUrl: '/' })}>
+                        onClick={async () => { 
+                            setMenuActivo(false);
+                            signOut({ redirect: false }).then(() => {
+                                router.push('/modulos/logingOut'); 
+                            });
+                        }}>
                         <AiOutlineLogout size="4rem" />
                         <p className="text-2xl ml-2 mt-4">Cerrar sesión</p>
                     </button>

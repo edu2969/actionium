@@ -1,18 +1,15 @@
-import { ReactNode } from "react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/utils/authOptions";
-import HomeNeo from "./homeneo/page";
+import React, { ReactNode } from "react";
+import HomeNeoPage from "./homeneo/page";
+import HomePanel from '../../components/HomePanel';
 
 interface ModulosProps {
     children: ReactNode;
 }
 
-export async function Modulos({ children }: ModulosProps): Promise<JSX.Element> {
-    const session = await getServerSession(authOptions);
+export default async function ModulosPage({ children }: ModulosProps): Promise<React.JSX.Element> {    
     return (
         <>
-            <HomeNeo />
-            {children}
+            <HomePanel />            
         </>
     );
 }

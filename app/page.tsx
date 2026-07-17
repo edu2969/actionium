@@ -1,10 +1,9 @@
 import LoginForm from "@/components/LoginForm";
-import { getServerSession } from "next-auth";
+import { auth } from "@/app/utils/auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "./api/auth/[...nextauth]/route";
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (session) {
     console.log("SESSION", session);

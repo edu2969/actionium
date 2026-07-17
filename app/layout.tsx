@@ -2,8 +2,8 @@ import { Inter } from 'next/font/google'
 import type { Metadata } from 'next'
 import './globals.css'
 import Nav from '@/components/Nav'
-import { getServerSession } from 'next-auth'
-import { authOptions } from './api/auth/[...nextauth]/route'
+import { Providers } from '@/components/Providers'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -16,7 +16,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions);
   return (    
     <html lang="en">
       <head>
@@ -24,9 +23,11 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
       </head>
-      <body className={inter.className}>      
-        {children}
-        <Nav user={session?.user}></Nav>      
+      <body className={inter.className}> 
+        <Providers>
+          {children}
+          <Nav />
+        </Providers>
       </body>
     </html>
   )
