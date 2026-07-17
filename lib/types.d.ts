@@ -1,5 +1,6 @@
 type ClientItemListType = {
     id: string,
+    _id: string,
     imgLogo: string,
     name: string,
     email: string
@@ -7,6 +8,7 @@ type ClientItemListType = {
 
 type UserFormType = {
     id: string | undefined,
+    _id: string,
     name: string,
     email: string,
     avatarImg: string | null,
@@ -14,6 +16,7 @@ type UserFormType = {
 
 type ContractItemListType = {
     id: string,
+    _id: string,
     clientImg: string,
     clientName: string,
     identifier: number,
@@ -110,4 +113,174 @@ type LogFromType = {
     collaboratorId: string,
     date: Date,
     entry: string,
+}
+
+type IBIToolStorage = {
+    date: Date,
+    value: number,
+}
+
+
+// types/dashboard.ts
+import { Types } from 'mongoose';
+
+// ============================================
+// TIPOS PARA LA RESPUESTA DEL API
+// ============================================
+
+// Notificación de contrato
+export interface ContractNotification {
+    type: string;
+    message: string;
+}
+
+// Contrato en la respuesta
+export interface DashboardContract {
+    id: string;
+    name: string;
+    status: 'active' | 'pending' | 'completed' | 'suspended' | 'expired' | 'cancelled';
+    profitability: number;
+    netAmount: number;
+    notifications: ContractNotification[];
+}
+
+// Cliente en la respuesta
+export interface DashboardClient {
+    id: string;
+    type: 'client';
+    health: number;
+    alerts: string[];
+    logo: string;
+    revenue: number;
+    growth: number;
+    contracts: DashboardContract[];
+}
+
+// Compañía central en la respuesta
+export interface DashboardCentral {
+    id: string;
+    type: 'company' | 'contract' | 'central';
+    health: number;
+    power: number;
+    efficiency: number;
+    logo: string;
+}
+
+// Respuesta completa del dashboard
+export interface DashboardResponse {
+    central: DashboardCentral;
+    clients: DashboardClient[];
+}
+
+// ============================================
+// TIPOS PARA LOS DATOS DE MONGODB (LEAN)
+// ============================================
+
+// Documento de Cliente (lean)
+export interface LeanClient {
+    _id: Types.ObjectId;
+    name: string;
+    imgLogo?: string;
+    [key: string]: any;
+}
+
+// Documento de Contrato (lean)
+export interface LeanContract {
+    _id: Types.ObjectId;
+    clientId: Types.ObjectId;
+    title: string;
+    identifier: number;
+    status: number;
+    netAmount: number;
+    balance?: number;
+    [key: string]: any;
+}
+
+// Documento de Proyecto (lean)
+export interface LeanProject {
+    _id: Types.ObjectId;
+    contractId: Types.ObjectId;
+    netAmount?: number;
+    rentability?: number;
+    [key: string]: any;
+}
+
+// Documento de Tarea (lean)
+export interface LeanTask {
+    _id: Types.ObjectId;
+    projectId: Types.ObjectId;
+    priority: number;
+    taskType: number;
+    status: number;
+    assignedTo?: Types.ObjectId;
+    weight?: number;
+    estimatedWeight?: number;
+    title?: string;
+    description?: string;
+    logs?: Array<{
+        collaboratorId: Types.ObjectId;
+        date: Date;
+        entry: string;
+        hours?: number;
+    }>;
+    todos?: Array<{
+        finishedAt?: Date;
+        title: string;
+        hours: number;
+    }>;
+    startDate?: Date;
+    endDate?: Date;
+    progress?: number;
+    hours?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+    __v?: number;
+}
+
+// ============================================
+// TIPOS INTERNOS PARA EL PROCESAMIENTO
+// ============================================
+
+// Tarea procesada con datos calculados
+export interface ProcessedTask {
+    id: Types.ObjectId;
+    title: string;
+    status: number;
+    progress: number;
+    hours: number;
+    completed: boolean;
+    endDate?: Date;
+}
+
+// Proyecto procesado con tareas
+export interface ProcessedProject {
+    _id: Types.ObjectId;
+    contractId: Types.ObjectId;
+    progress: number;
+    totalHours: number;
+    rentability: number;
+    tasks: ProcessedTask[];
+    [key: string]: any;
+}
+
+// Contrato procesado
+export interface ProcessedContract {
+    id: string;
+    name: string;
+    status: 'active' | 'pending' | 'completed' | 'suspended' | 'expired' | 'cancelled';
+    profitability: number;
+    netAmount: number;
+    notifications: ContractNotification[];
+}
+
+// Cliente procesado
+export interface ProcessedClient {
+    id: string;
+    type: 'client';
+    health: number;
+    alerts: string[];
+    logo: string;
+    revenue: number;
+    growth: number;
+    contracts: ProcessedContract[];
 }

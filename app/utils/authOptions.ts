@@ -18,6 +18,10 @@ export const authConfig: NextAuthConfig = {
 
         const { email, password } = credentials;
         
+        if (typeof email !== 'string' || typeof password !== 'string') {
+          return null;
+        }
+        
         try {
           await connectMongoDB();
           const user = await User.findOne({ email });

@@ -1,14 +1,7 @@
 const nextConfig = {
-    i18n: {
-        locales: ['es-CL'],
-        defaultLocale: 'es-CL',
-        domains: [
-            {
-                domain: 'ocustocus.cl',
-                defaultLocale: 'es-CL',
-            }
-        ],
-    },
+    // i18n configuration is not supported in App Router
+    // For internationalization in App Router, see:
+    // https://nextjs.org/docs/app/building-your-application/routing/internationalization
 }
 
 module.exports = nextConfig
