@@ -1,19 +1,8 @@
 'use client'
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from "react-hook-form";
 import { AiOutlineUser } from 'react-icons/ai';
-
-type ClientFormType = {
-    id: string | undefined,
-    name: string,
-    completeName: string,
-    identificationId: string,
-    identificationType: string,
-    email: string,
-    address: string,
-    imgLogo: string
-}
+import { useForm, SubmitHandler } from 'react-hook-form';
 
 function EdicionClienteContent() {
     const [client, setClient] = useState<ClientFormType>({
@@ -39,6 +28,14 @@ function EdicionClienteContent() {
     } = useForm<ClientFormType>();
     const [error, setError] = useState("");
 
+    const updateFormValues = (data: { client: ClientFormType }) => {
+        console.log("DATA", data);
+        (Object.keys(data.client) as (keyof ClientFormType)[]).forEach(key => {
+            setValue(key, data.client[key]);
+        });
+        setClient(data.client);
+    };
+
     async function loadClient(id: string) {
         console.log("GETTING CLIENTE..", id, new Date());
         if (id == null) return;
@@ -59,7 +56,7 @@ function EdicionClienteContent() {
         setClient(data.client);
     }
 
-    const onSubmit = async (data: ClientFormType) => {
+    const onSubmit: SubmitHandler<ClientFormType> = async (data) => {
         const id = params.get("_id");
         console.log("SUBMITING...", id, data);
         try {

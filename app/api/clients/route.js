@@ -7,7 +7,14 @@ export async function GET() {
         console.log("getAll Clients...");
         await connectMongoDB();
         const clients = await Client.find();        
-        return NextResponse.json({ clients });
+        return NextResponse.json({ clients: clients.map(c => {
+            return {
+                id: c._id.valueOf(),
+                name: c.name,
+                email: c.email,
+                imgLogo: c.imgLogo,               
+            }
+        }) });
     } catch (error) {
         console.log(error);
     }

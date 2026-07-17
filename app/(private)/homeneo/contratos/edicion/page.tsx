@@ -1,12 +1,13 @@
 'use client'
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 import { AiFillHome } from 'react-icons/ai';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { FaRegSave } from 'react-icons/fa';
 
+<<<<<<< HEAD:app/(private)/homeneo/contratos/edicion/page.tsx
 type ContratoFormType = {
     id: string | undefined,
     title: string,
@@ -22,6 +23,12 @@ function EdicionContratoContent() {
     const [clientes, setClientes] = useState<ClientItemListType[]>([]);
     const [vendedores, setVendedores] = useState<UserFormType[]>([]);
     const [contrato, setContrato] = useState<ContratoFormType>({
+=======
+export default function EdicionContrato() {
+    const [clientes, setClientes] = useState<ClientItemListType[]>([]);
+    const [vendedores, setVendedores] = useState<ClientItemListType[]>([]);
+    const [contrato, setContrato] = useState<ContractFormType>({
+>>>>>>> 257f9fa7eff636670c761e23e7b8cee25c807e20:app/modulos/homeneo/contratos/edicion/page.tsx
         id: undefined,
         title: "",
         clientId: null,
@@ -41,10 +48,22 @@ function EdicionContratoContent() {
             errors
         },
         handleSubmit,
+<<<<<<< HEAD:app/(private)/homeneo/contratos/edicion/page.tsx
     } = useForm<ContratoFormType>();
+=======
+    } = useForm<ContractFormType>();
+>>>>>>> 257f9fa7eff636670c761e23e7b8cee25c807e20:app/modulos/homeneo/contratos/edicion/page.tsx
     const [error, setError] = useState("");
 
-    async function loadContrato(id: string) {
+    const updateFormValues = (data: { contract: ContractFormType }) => {
+        console.log("DATA", data);
+        (Object.keys(data.contract) as (keyof ContractFormType)[]).forEach(key => {
+            setValue(key, data.contract[key]);
+        });
+        setContrato(data.contract);
+    };
+
+    async function loadContrato(id: string | null) {
         console.log("GETTING CONTRATO..", id, new Date());
         if (id == null) return;
         const response = await fetch(`/api/contracts/${id}`, {
@@ -58,6 +77,7 @@ function EdicionContratoContent() {
         }
         const data = await response.json();
         console.log("DATA", data);
+<<<<<<< HEAD:app/(private)/homeneo/contratos/edicion/page.tsx
         Object.keys(data.contract).map(key => {
             if (key == "netAmount") {
                 const value = new Intl.NumberFormat('es-CL').format(data.contract[key]);
@@ -66,6 +86,9 @@ function EdicionContratoContent() {
             } else setValue(key as keyof ContratoFormType, data.contract[key]);
         });
         setContrato(data.contract);
+=======
+        updateFormValues(data);
+>>>>>>> 257f9fa7eff636670c761e23e7b8cee25c807e20:app/modulos/homeneo/contratos/edicion/page.tsx
     }
 
     async function loadClientes() {
@@ -100,7 +123,7 @@ function EdicionContratoContent() {
         setVendedores(data.users);
     }
 
-    const onSubmit = async (data: ContratoFormType) => {
+    const onSubmit: SubmitHandler<ContractFormType> = async (data) => {
         const id = params.get("_id");
         console.log("SUBMITING...", id, data);
         data.netAmount = Number(data.netAmount.toString().replace(/\D/g, ''));
@@ -116,15 +139,6 @@ function EdicionContratoContent() {
         } catch (error) {
             console.log("ERROR", error);
         }
-    }
-
-    const imgLogo = (clientId: string) => {
-        console.log("CLIENTE", clientes);
-        return clientes.find(cliente => cliente._id == clientId)?.imgLogo;
-    }
-
-    const nombreCliente = (clientId: string) => {
-        return clientes.find(cliente => cliente._id == clientId)?.name;
     }
 
     useEffect(() => {
@@ -158,14 +172,14 @@ function EdicionContratoContent() {
                             <label htmlFor="clientId" className="block text-sm font-medium text-gray-700">Cliente</label>
                             <select id="clientId" {...register("clientId")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
                                 <option>Seleccione uno</option>
-                                {clientes && clientes.map(cliente => <option key={cliente._id} value={cliente._id}>{cliente.name}</option>)}
+                                {clientes && clientes.map(cliente => <option key={cliente.id} value={cliente.id}>{cliente.name}</option>)}
                             </select>
                         </div>
                         <div className="w-1/2 pl-2 mt-0">
                             <label htmlFor="vendorId" className="block text-sm font-medium text-gray-700">Vendedor</label>
                             <select id="vendorId" {...register("vendorId")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
                                 <option>Seleccione uno</option>
-                                {vendedores && vendedores.map(vendedor => <option key={vendedor._id} value={vendedor._id}>{vendedor.name}</option>)}
+                                {vendedores && vendedores.map(vendedor => <option key={vendedor.id} value={vendedor.id}>{vendedor.name}</option>)}
                             </select>
                         </div>
                     </div>

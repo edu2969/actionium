@@ -25,6 +25,8 @@ export async function GET(req) {
             startDate: task.startDate,
             endDate: task.endDate,
             progress: progress,
+            updatedAt: task.updatedAt,
+            todos: task.todos,
         };
     }));
     return NextResponse.json({ tasks: decoratedTasks });

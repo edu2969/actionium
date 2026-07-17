@@ -5,6 +5,7 @@ import { TASK_STATUS } from "@/app/utils/constants";
 
 export async function POST(req, { params }) {
     const body = await req.json();
+    console.log("POST TASK", body);
     await connectMongoDB();
     body.progress = body.todos?.filter(t => t.finishedAt != null).length / (body.todos?.length ?? 1) * 100;
     if(body.status == TASK_STATUS.defining) {

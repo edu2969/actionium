@@ -1,4 +1,5 @@
 import mongoose, { Schema, models } from "mongoose";
+import { type } from "os";
 
 const userSchema = new Schema(
   {
@@ -16,6 +17,12 @@ const userSchema = new Schema(
     },
     role: {
       type: Number,
+      default: null,
+    },
+    clientId: {
+      type: Schema.Types.ObjectId,
+      ref: "Client",
+      default: null
     },
     rut: {
       type: String,
@@ -25,10 +32,11 @@ const userSchema = new Schema(
     },
     birthDate: {
       type: Date,
+      default: null,
     },
     avatarImg: {
       type: String,
-    },
+    }
   },
   { timestamps: true }
 );

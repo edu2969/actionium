@@ -2,18 +2,29 @@ import { connectMongoDB } from "@/lib/mongodb";
 import Contract from "@/models/contract";
 import Client from "@/models/client";
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 
-export async function GET() {
+export async function GET(req) {
     console.log("getContracts...");
     await connectMongoDB();
-    const contracts = await Contract.find();
+    
+    const url = new URL(req.url);
+    const clientIds = url.searchParams.get("clientIds");
+    
+    let query = {};
+    if (clientIds) {
+        const clientIdArray = clientIds.split(',').map(id => new mongoose.Types.ObjectId(id.trim()));
+        query = { clientId: { $in: clientIdArray } };
+    }
+    
+    const contracts = await Contract.find(query);
 
     const decoratedContracts = await Promise.all(contracts.map(async (c) => {
         const cliente = await Client.findById(c.clientId);
         return {
             _id: c._id,
-            clientImg: cliente.imgLogo,
-            clientName: cliente.name,
+            clientImg: cliente?.imgLogo ?? '',
+            clientName: cliente?.name ?? '',
             identifier: c.identifier,
             title: c.title,
             status: c.status,

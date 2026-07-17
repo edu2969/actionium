@@ -6,16 +6,44 @@ type ClientItemListType = {
     email: string
 }
 
+type ClientFormType = {
+    id: string | undefined,
+    name: string,
+    completeName: string,
+    identificationId: string,
+    identificationType: string,
+    email: string,
+    address: string,
+    imgLogo: string
+}
+
+type UserListType = {
+    id: string,
+    avatarImg: string | null,
+    clientImg: string | null,
+    email: string,
+    name: string,
+    role: number
+}
+
 type UserFormType = {
     id: string | undefined,
     _id: string,
     name: string,
     email: string,
+    password: string,
+    role: string,
+    rut: string,
+    gener: string | null,
+    birthDate: Date,    
     avatarImg: string | null,
 }
 
 type ContractItemListType = {
+<<<<<<< HEAD
     id: string,
+=======
+>>>>>>> 257f9fa7eff636670c761e23e7b8cee25c807e20
     _id: string,
     clientImg: string,
     clientName: string,
@@ -26,6 +54,17 @@ type ContractItemListType = {
     netAmount: number,
     rentability: number,
     termsOfPayment: string
+}
+
+type ContractFormType = {
+    id: string | undefined,
+    title: string,
+    clientId: string | null,
+    vendorId: string | null,
+    status: string,
+    currency: string | null,
+    netAmount: number,
+    termsOfPayment: string | null   
 }
 
 type ProjectItemListType = {
@@ -66,10 +105,9 @@ type SprintItemView = {
     title: string,
     taskIndexFrom: string,
     taskIndexTo: string,
-    taskShortDescription: string,
+    startDate: Date,
+    endDate: Date,
     percentaje: number,
-    from: Date,
-    to: Date,
 }
 
 type TaskItemListType = {
@@ -84,6 +122,14 @@ type TaskItemListType = {
     startDate: Date,
     endDate: Date,
     progress: number,
+    updatedAt: Date,
+    todos: TodoType[],
+}
+
+type TodoType = {
+    finishedAt: Date | null,
+    title: string,
+    hours: number,
 }
 
 type TaskFormType = {

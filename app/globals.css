@@ -23,7 +23,7 @@ body {
 }
 
 .orbitron {
-  font-family: 'Orbitron', sans-serif;
+  font-family: var(--font-orbitron);
 }
 
 .area{

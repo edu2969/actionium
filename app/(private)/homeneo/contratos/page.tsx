@@ -13,18 +13,36 @@ import { GiNightSleep } from "react-icons/gi";
 
 function ContratosContent() {
     const [contracts, setContracts] = useState<ContractItemListType[]>([]);
+    const [clients, setClients] = useState<ClientItemListType[]>([]);
+    const [selectedClients, setSelectedClients] = useState<string[]>([]);
     const [loadingList, setLoadingList] = useState(true);
     const initData = useRef(false);
     const params = useSearchParams();
 
+    async function getClients() {
+        const res = await fetch('/api/clients');
+        const data = await res.json();
+        setClients(data.clients);
+    }
+
     async function getContracts() {
-        const res = await fetch(`/api/contracts`)
+        const clientIds = selectedClients.length > 0 ? selectedClients.join(',') : '';
+        const res = await fetch(`/api/contracts${clientIds ? `?clientIds=${clientIds}` : ''}`)
         res.json().then((data: ContractItemListType[] | any) => {
             console.log("DATA", data);
             setContracts(data.contracts);
             setLoadingList(false);
         });
     }
+
+    const toggleClient = (clientId: string) => {
+        setSelectedClients(prev => {
+            const newSelected = prev.includes(clientId) 
+                ? prev.filter(id => id !== clientId)
+                : [...prev, clientId];
+            return newSelected;
+        });
+    };
 
     const nombreEstado = (valor: number) => {
         return Object.keys(CONTRACT_STATUS).find(key => CONTRACT_STATUS[key as keyof typeof CONTRACT_STATUS] === valor)?.toUpperCase();
@@ -34,10 +52,17 @@ function ContratosContent() {
 
     useEffect(() => {
         if (!initData.current) {
-            initData.current = true
+            initData.current = true;
+            getClients();
             getContracts();
         }
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (initData.current) {
+            getContracts();
+        }
+    }, [selectedClients]);
 
     return (
         <main className="p-6 mt-8 h-screen overflow-y-scroll">            
@@ -71,6 +96,32 @@ function ContratosContent() {
                             </button>
                         </Link>
                     </div>
+
+                    {/* Filtro de clientes */}
+                    <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                        <h3 className="text-sm font-medium text-gray-700 mb-2">Filtrar por cliente:</h3>
+                        <div className="flex flex-wrap gap-2">
+                            {clients.map(client => (
+                                <button
+                                    key={client.id}
+                                    onClick={() => toggleClient(client.id)}
+                                    className={`flex items-center px-3 py-2 rounded-lg border transition-colors ${
+                                        selectedClients.includes(client.id)
+                                            ? 'bg-blue-100 border-blue-300 text-blue-800'
+                                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    {client.imgLogo ? (
+                                        <img className="w-6 h-6 rounded-full mr-2" src={client.imgLogo} alt={`${client.name} logo`} />
+                                    ) : (
+                                        <FaUserCircle className="w-6 h-6 text-slate-400 mr-2" />
+                                    )}
+                                    <span className="text-xs">{client.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <div className="w-full text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <div className="flex">

@@ -1,24 +1,11 @@
-# OCUSTOCUS
-## Gestión de stocks y bodega
+# A C T I O N I U M
+## Gestión de proyectos y contratos
 
-OCUSTOCUS es una poderosa herramienta que colabora en la gestión
-de stocks y bodega
+A C T I O N I U M es una poderosa herramienta que colabora en la gestión
+de proyectos y contratos
 
-- Gestiona perfiles de encargado de bodega, encargado de OCs y vista gerencial
-- Apoya efectivamente en KPIs relevantes en la mejora de gestión
-- Traza la información y estima con mayor precisión presupuestos anuales
+- Gestiona la cartera de clientes y sus contrato
+- Gestiona la cartera de proyectos para cada contrato
+- Apoya la trazabilidad de las tareas y distribución de sprints semanales para un proyecto (metodologícamente ágil)
 
-Notas
-
-Alertas Joce
-- Cuando ocurre un quiebre de stock
-
-Oportunidades
-- KPI para desempaño de bodegas
-- KPI de proveedores críticos
-- Estrategia de estimación de presupuesto anual y seguimiento
-- Históricos
-
-Al llegar una bodega puedes corregir un OC
-Se pidio 3 pero llegó una, por tanto faltan 2
 
