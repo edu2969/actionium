@@ -9,6 +9,7 @@ import useMeasure from "react-use-measure"
 import { LineChart } from "@/app/components/charts/LineChart"
 import { MultiLineChart } from "@/app/components/charts/MultiLineChart"
 import { GiTeamUpgrade } from "react-icons/gi";
+import { IBIToolStorage } from "@/lib/types";
 
 dayjs.locale("es");
 

@@ -3,6 +3,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AiOutlineUser } from 'react-icons/ai';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { ClientFormType } from '@/lib/types';
 
 function EdicionClienteContent() {
     const [client, setClient] = useState<ClientFormType>({

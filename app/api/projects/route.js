@@ -4,13 +4,13 @@ import Client from "@/models/client";
 import Contract from "@/models/contract";
 import Task from "@/models/task";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { auth } from "@/app/utils/auth";
 import { authOptions } from "@/app/utils/authOptions";
 import { PROJECT_STATUS, USER_ROLE } from "@/app/utils/constants";
 import mongoose from "mongoose";
 
 export async function GET(req) {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     const userRole = session?.user?.role;
     const userId = session?.user?.id;
     const userClientId = session?.user?.clientId;

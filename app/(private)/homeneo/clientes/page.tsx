@@ -1,5 +1,6 @@
 'use client'
 import Loader from "@/app/components/loader/loader";
+import { ClientItemListType } from "@/lib/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaPlus, FaUserCircle } from "react-icons/fa";

@@ -195,7 +195,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<DashboardR
                 health: avgHealth,
                 power: Math.min(100, Math.max(0, avgHealth + 5)),
                 efficiency: efficiency,
-                logo: '/clients/yga-neon.png'
+                logo: '/clientes/yga-neon.png'
             },
             clients: clientsWithData
         };

@@ -10,6 +10,7 @@ import { AiFillHome } from "react-icons/ai";
 import { IoIosArrowForward } from "react-icons/io";
 import { useSearchParams } from "next/navigation";
 import { GiNightSleep } from "react-icons/gi";
+import { ClientItemListType, ContractItemListType } from "@/lib/types";
 
 function ContratosContent() {
     const [contracts, setContracts] = useState<ContractItemListType[]>([]);

@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { AiFillHome } from 'react-icons/ai';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { FaRegSave } from 'react-icons/fa';
+import { ClientItemListType, ContractFormType, UserFormType } from '@/lib/types';
 
-<<<<<<< HEAD:app/(private)/homeneo/contratos/edicion/page.tsx
 type ContratoFormType = {
     id: string | undefined,
     title: string,
@@ -23,12 +23,6 @@ function EdicionContratoContent() {
     const [clientes, setClientes] = useState<ClientItemListType[]>([]);
     const [vendedores, setVendedores] = useState<UserFormType[]>([]);
     const [contrato, setContrato] = useState<ContratoFormType>({
-=======
-export default function EdicionContrato() {
-    const [clientes, setClientes] = useState<ClientItemListType[]>([]);
-    const [vendedores, setVendedores] = useState<ClientItemListType[]>([]);
-    const [contrato, setContrato] = useState<ContractFormType>({
->>>>>>> 257f9fa7eff636670c761e23e7b8cee25c807e20:app/modulos/homeneo/contratos/edicion/page.tsx
         id: undefined,
         title: "",
         clientId: null,
@@ -48,11 +42,7 @@ export default function EdicionContrato() {
             errors
         },
         handleSubmit,
-<<<<<<< HEAD:app/(private)/homeneo/contratos/edicion/page.tsx
     } = useForm<ContratoFormType>();
-=======
-    } = useForm<ContractFormType>();
->>>>>>> 257f9fa7eff636670c761e23e7b8cee25c807e20:app/modulos/homeneo/contratos/edicion/page.tsx
     const [error, setError] = useState("");
 
     const updateFormValues = (data: { contract: ContractFormType }) => {
@@ -77,7 +67,6 @@ export default function EdicionContrato() {
         }
         const data = await response.json();
         console.log("DATA", data);
-<<<<<<< HEAD:app/(private)/homeneo/contratos/edicion/page.tsx
         Object.keys(data.contract).map(key => {
             if (key == "netAmount") {
                 const value = new Intl.NumberFormat('es-CL').format(data.contract[key]);
@@ -86,9 +75,6 @@ export default function EdicionContrato() {
             } else setValue(key as keyof ContratoFormType, data.contract[key]);
         });
         setContrato(data.contract);
-=======
-        updateFormValues(data);
->>>>>>> 257f9fa7eff636670c761e23e7b8cee25c807e20:app/modulos/homeneo/contratos/edicion/page.tsx
     }
 
     async function loadClientes() {

@@ -4,6 +4,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { forEach } from "lodash";
 import dayjs from "dayjs";
+import { ProjectFormType, SprintItemView, SprintView, TaskItemListType, TodoType } from "@/lib/types";
+import Link from "next/link";
+import { AiFillHome } from "react-icons/ai";
+import { IoIosArrowForward } from "react-icons/io";
+import Loader from "@/app/components/Loader";
 
 function SprintsContent() {
     const [sprints, setSprints] = useState<SprintView[]>([]);
@@ -94,8 +99,7 @@ function SprintsContent() {
             sprints
         };
 
-        console.log("VIEW", view);
-        setView(view);
+        console.log("VIEW", view);        
         setLoadingList(false);
     }
 
@@ -133,7 +137,7 @@ function SprintsContent() {
                                 </h3>
                                 <div className="flex justify-center min-h-20 max-h-20 overflow-hidden text-ellipsis">
                                     <p className="text-center text-xs text-gray-400 mt-2 mb-2">
-                                        {sprint.sprints.map(task => task.taskShortDescription).join(', ')}
+                                        
                                     </p>
                                 </div>
                                 <div className="text-center text-4xl text-gray-300 mb-4 orbitron">

@@ -18,6 +18,7 @@ import { FaTrash } from "react-icons/fa";
 import { ConfirmModal } from "@/app/components/modals/ConfirmModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ProjectFormType, TaskItemListType } from "@/lib/types";
 
 dayjs.locale('es');
 

@@ -9,17 +9,13 @@ import timezone from 'dayjs/plugin/timezone';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AiFillHome } from 'react-icons/ai';
-import { ConfirmModal } from '../modals/ConfirmModal';
+import { ConfirmModal } from '@/app/components/modals/ConfirmModal';
 import { PROJECT_STATUS } from '@/app/utils/constants';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-<<<<<<<< HEAD:app/components/ProjectForm.jsx
 function ProjectFormContent() {
-========
-export default function EditProject() {
->>>>>>>> 257f9fa7eff636670c761e23e7b8cee25c807e20:app/components/projects/EditProject.jsx
     const [clients, setClients] = useState([]);
     const [selectedClient, setSelectedClient] = useState(null);
     const [contracts, setContracts] = useState([]);

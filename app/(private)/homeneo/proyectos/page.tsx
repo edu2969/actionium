@@ -14,6 +14,7 @@ import { AiFillHome } from "react-icons/ai";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { GiNightSleep } from "react-icons/gi";
+import { ProjectFormType, ProjectItemListType } from "@/lib/types";
 dayjs.locale("es");
 
 function ProjectsContent() {

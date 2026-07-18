@@ -1,13 +1,14 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import './HomePanel.css';
 import { useQuery } from "@tanstack/react-query";
 import { DashboardResponse, DashboardCentral, DashboardClient, DashboardContract } from '@/lib/types';
 
 // Tipos para los nodos del grafo
-interface GraphNode extends DashboardCentral {
+interface GraphNode extends Partial<DashboardCentral> {
+    id: string;
     parentId?: string;
     x?: number;
     y?: number;
@@ -18,6 +19,12 @@ interface GraphNode extends DashboardCentral {
     profitability?: number;
     status?: string;
     name?: string;
+    health?: number;
+    logo?: string;
+    revenue?: number;
+    growth?: number;
+    contracts?: DashboardContract[];
+    // power y efficiency son opcionales ahora
 }
 
 interface GraphLink {
@@ -46,11 +53,11 @@ export default function HomePanel() {
         };
 
         setTimeout(updateDimensions, 100);
-        
+
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', updateDimensions);
         }
-        
+
         return () => {
             if (typeof window !== 'undefined') {
                 window.removeEventListener('resize', updateDimensions);
@@ -70,6 +77,18 @@ export default function HomePanel() {
         }
     });
 
+    useEffect(() => {
+        if (companyData && companyData.clients && companyData.clients.length > 0 && !activeClient) {
+            // Buscar un cliente con contratos
+            const clientWithContracts = companyData.clients.find(c => c.contracts && c.contracts.length > 0);
+            if (clientWithContracts) {
+                setActiveClient(clientWithContracts.id);
+            } else {
+                setActiveClient(companyData.clients[0].id);
+            }
+        }
+    }, [companyData, activeClient]);
+
     // Renderizar grafo
     useEffect(() => {
         if (!svgRef.current || !companyData || isCompanyLoading) {
@@ -86,7 +105,7 @@ export default function HomePanel() {
             // Crear nodos
             const nodes: GraphNode[] = [
                 { ...central, type: 'company' },
-                ...clients.map(c => ({ ...c, type: 'client' as const }))
+                ...clients.map(c => ({ ...c, type: 'company' as const }))
             ];
 
             // Agregar contratos del cliente activo
@@ -178,14 +197,14 @@ export default function HomePanel() {
                     const siblingContracts = nodes.filter(n => n.type === "contract" && n.parentId === contract.parentId);
                     const contractIndex = siblingContracts.indexOf(contract);
                     const totalContracts = siblingContracts.length;
-                    
+
                     let contractAngle = clientAngle;
                     if (totalContracts > 1) {
                         const angleSpread = Math.PI / 4;
                         const angleStep = angleSpread / Math.max(totalContracts - 1, 1);
                         contractAngle = clientAngle - (angleSpread / 2) + (contractIndex * angleStep);
                     }
-                    
+
                     const contractDistance = clientRadius + 180;
                     contract.x = centerX + Math.cos(contractAngle) * contractDistance;
                     contract.y = centerY + Math.sin(contractAngle) * contractDistance;
@@ -207,7 +226,7 @@ export default function HomePanel() {
 
             // Defs
             const defs = mainSvg.append("defs");
-            
+
             const bgGradient = defs.append("radialGradient")
                 .attr("id", "bgGradient")
                 .attr("cx", "50%")
@@ -245,14 +264,26 @@ export default function HomePanel() {
                 .data(links, (d: GraphLink) => `${d.source}-${d.target}`);
 
             linkSelection.exit()
-                .filter((d: GraphLink) => d.type === "contract")
+                .filter((d: any) => d.type === "contract")
                 .transition()
                 .duration(400)
                 .style("opacity", 0)
                 .remove();
 
             linkSelection.exit()
-                .filter((d: GraphLink) => d.type !== "contract")
+                .filter((d: any) => d.type !== "contract")
+                .remove();
+
+            linkSelection.exit()
+                .filter((d: any) => d.type === "contract")
+                .transition()
+                .duration(400)
+                .style("opacity", 0)
+                .remove();
+
+            // Enlaces normales que salen
+            linkSelection.exit()
+                .filter((d: any) => d.type !== "contract")
                 .remove();
 
             const linkEnter = linkSelection.enter()
@@ -269,33 +300,37 @@ export default function HomePanel() {
             const nodeSelection = mainSvg.selectAll<SVGGElement, GraphNode>("g.node")
                 .data(nodes, (d: GraphNode) => d.id);
 
+            // app/components/HomePanel.tsx
             const nodeExit = nodeSelection.exit();
-            
-            nodeExit.filter((d: GraphNode) => d.type === "contract")
+
+            // ✅ CORREGIDO: Usar any en el filtro
+            nodeExit
+                .filter((d: any) => d.type === "contract")
                 .transition()
                 .duration(600)
                 .ease(d3.easeCubicInOut)
                 .style("opacity", 0)
-                .attrTween("transform", function(d: GraphNode) {
+                // app/components/HomePanel.tsx
+                .attrTween("transform", function (this: SVGGElement, d: any) {
                     const parentNode = nodes.find(n => n.id === d.parentId);
                     const currentX = d.x || 0;
                     const currentY = d.y || 0;
-                    
+
                     let targetX: number, targetY: number;
-                    if (parentNode && parentNode.x !== undefined) {
+                    if (parentNode && parentNode.x !== undefined && parentNode.y !== undefined) {
                         targetX = parentNode.x;
                         targetY = parentNode.y;
                     } else {
                         const centerX = width / 2;
                         const centerY = height / 2;
                         const clientRadius = Math.min(width, height) * 0.2;
-                        const clientIndex = clients.findIndex(c => c.id === d.parentId);
-                        const angle = (clientIndex / clients.length) * 2 * Math.PI;
+                        const clientIndex = companyData.clients.findIndex(c => c.id === d.parentId);
+                        const angle = (clientIndex / companyData.clients.length) * 2 * Math.PI;
                         targetX = centerX + Math.cos(angle) * clientRadius;
                         targetY = centerY + Math.sin(angle) * clientRadius;
                     }
-                    
-                    return function(t: number) {
+
+                    return function (t: number) {
                         const x = currentX + (targetX - currentX) * t;
                         const y = currentY + (targetY - currentY) * t;
                         const scale = 1 - t * 0.9;
@@ -304,24 +339,29 @@ export default function HomePanel() {
                 })
                 .remove();
 
-            nodeExit.filter((d: GraphNode) => d.type !== "contract")
+            // ✅ CORREGIDO: Usar any aquí también
+            nodeExit
+                .filter((d: any) => d.type !== "contract")
                 .remove();
 
+            // app/components/HomePanel.tsx - Sección de nodos completamente corregida
+
+            // Nodos que entran
             const nodeEnter = nodeSelection.enter()
                 .append("g")
                 .attr("class", "node")
                 .style("opacity", 1)
                 .call(d3.drag<SVGGElement, GraphNode>()
-                    .on("start", function(event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
+                    .on("start", function (event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
                         if (!event.active) simulation.alphaTarget(0.3).restart();
                         d.fx = d.x || 0;
                         d.fy = d.y || 0;
                     })
-                    .on("drag", function(event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
+                    .on("drag", function (event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
                         d.fx = event.x;
                         d.fy = event.y;
                     })
-                    .on("end", function(event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
+                    .on("end", function (event: d3.D3DragEvent<SVGGElement, GraphNode, GraphNode>, d: GraphNode) {
                         if (!event.active) simulation.alphaTarget(0);
                         d.fx = null;
                         d.fy = null;
@@ -330,95 +370,101 @@ export default function HomePanel() {
 
             const node = nodeEnter.merge(nodeSelection);
 
-            // Círculos de nodos
+            // ✅ Círculos de nodos - Sin filtro de tipo
             nodeEnter.append("circle")
-                .attr("r", (d: GraphNode) => {
+                .attr("r", (d: any) => {
                     if (d.type === "company") return 40;
                     if (d.type === "contract") return 30;
                     return 30;
                 })
-                .attr("fill", (d: GraphNode) => {
+                .attr("fill", (d: any) => {
                     if (d.type === "company") return "#1a1a2e";
                     if (d.type === "contract") return "#2a2a3e";
                     return "#16213e";
                 })
-                .attr("stroke", (d: GraphNode) => {
+                .attr("stroke", (d: any) => {
                     if (d.type === "company") return "#00d4ff";
                     if (d.type === "contract") return "#ffaa00";
                     return "#00d4ff";
                 })
-                .attr("stroke-width", (d: GraphNode) => {
+                .attr("stroke-width", (d: any) => {
                     if (d.type === "company") return 2;
                     if (d.type === "contract") return 1;
                     return 2;
                 });
 
-            // Indicadores de salud
-            nodeEnter.filter((d: GraphNode) => d.type === "client")
+            // ✅ Indicadores de salud - Usando any
+            nodeEnter.filter((d: any) => d.type === "client")
                 .append("circle")
                 .attr("r", 35)
                 .attr("fill", "none")
-                .attr("stroke", (d: GraphNode) => getHealthColor(d.health || 50))
+                .attr("stroke", (d: any) => getHealthColor(d.health || 50))
                 .attr("stroke-width", 3)
-                .attr("stroke-dasharray", (d: GraphNode) => `${((d.health || 50) / 100) * 220} 220`)
+                .attr("stroke-dasharray", (d: any) => `${((d.health || 50) / 100) * 220} 220`)
                 .attr("opacity", 0.8);
 
-            nodeEnter.filter((d: GraphNode) => d.type === "company")
+            nodeEnter.filter((d: any) => d.type === "company")
                 .append("circle")
                 .attr("r", 45)
                 .attr("fill", "none")
-                .attr("stroke", (d: GraphNode) => getHealthColor(d.health || 80))
+                .attr("stroke", (d: any) => getHealthColor(d.health || 80))
                 .attr("stroke-width", 3)
-                .attr("stroke-dasharray", (d: GraphNode) => `${((d.health || 80) / 100) * 283} 283`)
+                .attr("stroke-dasharray", (d: any) => `${((d.health || 80) / 100) * 283} 283`)
                 .attr("opacity", 0.8);
 
-            // Logo central
-            nodeEnter.filter((d: GraphNode) => d.type === "company")
+            // ✅ Logo central - Usando any
+            nodeEnter.filter((d: any) => d.type === "company")
                 .append("image")
-                .attr("href", "/clientes/yga-neon.png")
+                .attr("href", (d: any) => d.logo)
                 .attr("x", -25)
                 .attr("y", -25)
                 .attr("width", 50)
                 .attr("height", 50)
-                .attr("clip-path", "url(#clip-central)")
+                .attr("clip-path", (d: any) => `url(${d.logo})`)
                 .attr("preserveAspectRatio", "xMidYMid slice");
 
-            nodeEnter.filter((d: GraphNode) => d.type === "company")
+            nodeEnter.filter((d: any) => d.type === "company")
                 .append("circle")
                 .attr("r", 25)
                 .attr("fill", "none")
                 .attr("stroke", "#00d4ff")
                 .attr("stroke-width", 2);
 
-            // Logos de clientes
-            nodeEnter.filter((d: GraphNode) => d.type === "client")
+            // ✅ Logos de clientes - Usando any
+            nodeEnter.filter((d: any) => d.type === "company")
                 .append("image")
-                .attr("href", (d: GraphNode) => d.logo || '/clientes/default.png')
+                .attr("href", (d: any) => d.logo || '/clientes/default.png')
                 .attr("x", -20)
                 .attr("y", -20)
                 .attr("width", 40)
                 .attr("height", 40)
-                .attr("clip-path", (d: GraphNode) => `url(#clip-${d.id})`)
+                .attr("clip-path", (d: any) => `url(#clip-${d.id})`)
                 .attr("preserveAspectRatio", "xMidYMid slice")
                 .style("cursor", "pointer")
-                .on("click", function(event: MouseEvent, d: GraphNode) {
+                .on("click", function (this: SVGGElement, event: MouseEvent, d: any) {
                     event.stopPropagation();
+                    console.log('Cliente clickeado:', d.id, 'Activo actual:', activeClient);
+
+                    // Alternar estado del cliente
                     if (activeClient === d.id) {
                         setActiveClient(null);
+                        console.log('Desactivando cliente:', d.id);
                     } else {
                         setActiveClient(d.id);
+                        console.log('Activando cliente:', d.id);
                     }
                 });
 
-            nodeEnter.filter((d: GraphNode) => d.type === "client")
+            // ✅ Círculo de borde para clientes
+            nodeEnter.filter((d: any) => d.type === "client")
                 .append("circle")
                 .attr("r", 20)
                 .attr("fill", "none")
-                .attr("stroke", "#00d4ff")
-                .attr("stroke-width", 1);
+                .attr("stroke", (d: any) => activeClient === d.id ? "#ffaa00" : "#00d4ff")
+                .attr("stroke-width", (d: any) => activeClient === d.id ? 3 : 1);
 
-            // Nodos de contratos
-            nodeEnter.filter((d: GraphNode) => d.type === "contract")
+            // ✅ Nodos de contratos - Usando any
+            nodeEnter.filter((d: any) => d.type === "contract")
                 .append("foreignObject")
                 .attr("x", -20)
                 .attr("y", -20)
@@ -426,15 +472,15 @@ export default function HomePanel() {
                 .attr("height", 40)
                 .attr("clip-path", "url(#clip-contract)")
                 .html(`
-                    <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #2a2a3e, #1a1a2e);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffaa00">
-                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                            <path d="M8,12H16V14H8V12M8,16H13V18H8V16Z" fill="#00d4ff"/>
-                        </svg>
-                    </div>
-                `);
+        <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #2a2a3e, #1a1a2e);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffaa00">
+                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                <path d="M8,12H16V14H8V12M8,16H13V18H8V16Z" fill="#00d4ff"/>
+            </svg>
+        </div>
+    `);
 
-            nodeEnter.filter((d: GraphNode) => d.type === "contract")
+            nodeEnter.filter((d: any) => d.type === "contract")
                 .append("circle")
                 .attr("r", 20)
                 .attr("fill", "none")
@@ -442,46 +488,46 @@ export default function HomePanel() {
                 .attr("stroke-width", 2)
                 .attr("stroke-dasharray", "5,5");
 
-            // Indicador de estado del contrato
-            nodeEnter.filter((d: GraphNode) => d.type === "contract")
+            // ✅ Indicador de estado del contrato - Usando any
+            nodeEnter.filter((d: any) => d.type === "contract")
                 .append("circle")
                 .attr("r", 35)
                 .attr("fill", "none")
-                .attr("stroke", (d: GraphNode) => getContractStatusColor(d.status || 'suspended'))
+                .attr("stroke", (d: any) => getContractStatusColor(d.status || 'suspended'))
                 .attr("stroke-width", 3)
-                .attr("stroke-dasharray", (d: GraphNode) => `${((d.profitability || 50) / 100) * 220} 220`)
+                .attr("stroke-dasharray", (d: any) => `${((d.profitability || 50) / 100) * 220} 220`)
                 .attr("opacity", 0.8);
 
-            // Estado del contrato
-            nodeEnter.filter((d: GraphNode) => d.type === "contract")
+            // ✅ Estado del contrato - Usando any
+            nodeEnter.filter((d: any) => d.type === "contract")
                 .append("text")
-                .text((d: GraphNode) => getContractStatusText(d.status || 'suspended'))
+                .text((d: any) => getContractStatusText(d.status || 'suspended'))
                 .attr("text-anchor", "middle")
                 .attr("dy", "30")
-                .attr("fill", (d: GraphNode) => getContractStatusColor(d.status || 'suspended'))
+                .attr("fill", (d: any) => getContractStatusColor(d.status || 'suspended'))
                 .attr("font-size", "8px")
                 .attr("font-weight", "bold");
 
-            // Rentabilidad
-            nodeEnter.filter((d: GraphNode) => d.type === "contract")
+            // ✅ Rentabilidad - Usando any
+            nodeEnter.filter((d: any) => d.type === "contract")
                 .append("text")
-                .text((d: GraphNode) => `${d.profitability || 0}%`)
+                .text((d: any) => `${d.profitability || 0}%`)
                 .attr("text-anchor", "middle")
                 .attr("dy", "42")
                 .attr("fill", "#00d4ff")
                 .attr("font-size", "7px");
 
-            // Notificaciones
-            nodeEnter.filter((d: GraphNode) => d.type === "contract" && d.notifications && d.notifications.length > 0)
+            // ✅ Notificaciones - Usando any
+            nodeEnter.filter((d: any) => d.type === "contract" && d.notifications && d.notifications.length > 0)
                 .append("circle")
                 .attr("r", 6)
                 .attr("fill", "#ff4444")
                 .attr("cx", 20)
                 .attr("cy", -20);
 
-            nodeEnter.filter((d: GraphNode) => d.type === "contract" && d.notifications && d.notifications.length > 0)
+            nodeEnter.filter((d: any) => d.type === "contract" && d.notifications && d.notifications.length > 0)
                 .append("text")
-                .text((d: GraphNode) => d.notifications?.length || 0)
+                .text((d: any) => d.notifications?.length || 0)
                 .attr("text-anchor", "middle")
                 .attr("dy", "3")
                 .attr("x", 20)
@@ -490,17 +536,17 @@ export default function HomePanel() {
                 .attr("font-size", "8px")
                 .attr("font-weight", "bold");
 
-            // Alertas
-            nodeEnter.filter((d: GraphNode) => d.alerts && d.alerts.length > 0)
+            // ✅ Alertas - Usando any
+            nodeEnter.filter((d: any) => d.alerts && d.alerts.length > 0)
                 .append("circle")
                 .attr("r", 8)
                 .attr("cx", 25)
                 .attr("cy", -25)
                 .attr("fill", "#ff4444");
 
-            nodeEnter.filter((d: GraphNode) => d.alerts && d.alerts.length > 0)
+            nodeEnter.filter((d: any) => d.alerts && d.alerts.length > 0)
                 .append("text")
-                .text((d: GraphNode) => d.alerts?.length || 0)
+                .text((d: any) => d.alerts?.length || 0)
                 .attr("x", 25)
                 .attr("y", -21)
                 .attr("text-anchor", "middle")
@@ -608,8 +654,8 @@ export default function HomePanel() {
         .slice(0, 3);
 
     // Total de notificaciones
-    const totalNotifications = companyData.clients.reduce((sum, c) => 
-        sum + (c.contracts?.reduce((s, contract) => 
+    const totalNotifications = companyData.clients.reduce((sum, c) =>
+        sum + (c.contracts?.reduce((s, contract) =>
             s + (contract.notifications?.length || 0), 0) || 0), 0);
 
     return (
@@ -639,7 +685,7 @@ export default function HomePanel() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="panel-section">
                         <h3>Contratos Críticos</h3>
                         {criticalContracts.length > 0 ? (
