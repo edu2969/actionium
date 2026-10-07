@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { FaPlus, FaUserCircle } from "react-icons/fa";
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
@@ -15,6 +16,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { GiNightSleep } from "react-icons/gi";
 import { ProjectFormType, ProjectItemListType } from "@/lib/types";
+import { getClientImageSrc } from "@/lib/clientImage";
 dayjs.locale("es");
 
 function ProjectsContent() {
@@ -24,6 +26,7 @@ function ProjectsContent() {
     const initData = useRef(false);
     const router = useRouter();
     const params = useSearchParams();
+    const queryClient = useQueryClient();
 
     async function getProjects() {
         const res = await fetch(`/api/projects${params.get("contractId") != null ? ('?contractId=' + params.get("contractId")) : ''}`);
@@ -38,13 +41,17 @@ function ProjectsContent() {
         const id = params.get("_id");
         console.log("SUBMITING...", id, data);
         try {
-            await fetch(`/api/projects${id != null ? ('/' + id) : ''}`, {
+            const response = await fetch(`/api/projects${id != null ? ('/' + id) : ''}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data)
             });
+            if (!response.ok) {
+                throw new Error("No se pudo guardar el proyecto.");
+            }
+            await queryClient.invalidateQueries({ queryKey: ["panel-data"] });
             router.back();
         } catch (error) {
             console.log("ERROR", error);
@@ -122,8 +129,11 @@ function ProjectsContent() {
                         {projects && projects.map(project => (
                             <div key={project.id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-600 h-24">
                                 <div className="w-2/12 flex items-center pl-4 text-gray-900 whitespace-nowrap dark:text-white">
-                                    {project.clientImg && <img className="w-10 h-10 rounded-full" src={project.clientImg} alt={`${project.clientName} avatar`} />}
-                                    {project.clientImg == "" && <FaUserCircle className="w-10 h-10 text-slate-400" size="1em" />}
+                                    {getClientImageSrc(project.clientImg) ? (
+                                        <img className="w-10 h-10 rounded-full" src={getClientImageSrc(project.clientImg)} alt={`${project.clientName} avatar`} />
+                                    ) : (
+                                        <FaUserCircle className="w-10 h-10 text-slate-400" size="1em" />
+                                    )}
                                     <div className="ps-3">
                                         <div className="text-base font-semibold">{project.clientName}</div>
                                     </div>

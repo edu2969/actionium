@@ -19,6 +19,7 @@ import { ConfirmModal } from "@/app/components/modals/ConfirmModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ProjectFormType, TaskItemListType } from "@/lib/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 dayjs.locale('es');
 
@@ -30,6 +31,7 @@ function TasksContent() {
     const [taskToDelete, setTaskToDelete] = useState("");
     const [project, setProject] = useState<ProjectFormType>();
     const params = useSearchParams();
+    const queryClient = useQueryClient();
 
     async function getProjectById() {
         const res = await fetch(`/api/projects/${params.get("projectId")}`);
@@ -59,6 +61,7 @@ function TasksContent() {
             method: 'DELETE',
         });
         if (res.ok) {
+            await queryClient.invalidateQueries({ queryKey: ["panel-data"] });
             getTasks();
             toast.success('Tarea eliminada exitosamente', {
                 position: "top-right",

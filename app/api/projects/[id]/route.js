@@ -12,13 +12,21 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export async function POST(req, { params }) {
-    const body = await req.json();
-    await connectMongoDB();    
-    console.log("Update project...", body);
-    const tasks = await Task.find({ projectId: params.id }).sort({ priority: 1 });
-    let currentStartDate = dayjs(body.kickOff).utc();
+    const { id } = await params;
+    if (typeof id !== "string" || !/^[a-f\d]{24}$/i.test(id)) {
+        return NextResponse.json({ error: "Invalid project id." }, { status: 400 });
+    }
 
-    const project = await Project.findById(params.id);
+    const body = await req.json();
+    await connectMongoDB();
+    console.log("Update project...", body);
+    const project = await Project.findById(id);
+    if (!project) {
+        return NextResponse.json({ error: "Project not found." }, { status: 404 });
+    }
+
+    const tasks = await Task.find({ projectId: id }).sort({ priority: 1 });
+    let currentStartDate = dayjs(body.kickOff).utc();
     let inDefinition = project.status === PROJECT_STATUS.defining;    
     var hasChanged = project.status !== body.status;        
     for (const task of tasks) {
@@ -73,25 +81,25 @@ export async function POST(req, { params }) {
 
     // Actualizar el proyecto con las nuevas fechas
     body.end = currentStartDate.toDate();
-    const resp = await Project.findByIdAndUpdate(params.id, body);
+    const resp = await Project.findByIdAndUpdate(id, body);
 
-    return resp ? NextResponse.json(resp) : NextResponse.json(error.message, {
-        status: 404,
-    });
+    return NextResponse.json(resp);
 }
 
 export async function GET(req, { params }) {
-    console.log("getProjectById...", params);
+    const { id } = await params;
+    console.log("getProjectById...", id);
     await connectMongoDB();
-    const projectDoc = await Project.findOne({ _id: params.id });
+    const projectDoc = await Project.findOne({ _id: id });
     if (!projectDoc) {
-        return NextResponse.json("Proyecto " + params.id + " not found", {
-            status: 400,
-        });
+        return NextResponse.json(
+            { error: `Proyecto ${id} no encontrado.` },
+            { status: 404 }
+        );
     }
 
     const contract = await Contract.findOne({ _id: projectDoc.contractId });
-    const tasks = await Task.find({ projectId: params.id });
+    const tasks = await Task.find({ projectId: id });
 
     const project = projectDoc.toObject(); 
     project.tasks = tasks;

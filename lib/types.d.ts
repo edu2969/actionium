@@ -49,7 +49,7 @@ type ContractItemListType = {
     status: number,
     currency: string,
     netAmount: number,
-    rentability: number,
+    rentability: number | null,
     termsOfPayment: string
 }
 
@@ -182,15 +182,27 @@ export interface DashboardContract {
     id: string;
     name: string;
     status: 'active' | 'pending' | 'completed' | 'suspended' | 'expired' | 'cancelled';
-    profitability: number;
+    profitability: number | null;
     netAmount: number;
+    currency: string;
     notifications: ContractNotification[];
+    notificationCount: number;
+}
+
+export interface ClientPreferences {
+    archived: boolean;
+}
+
+export interface ClientPreferencesResponse {
+    preferencesByClientId: Record<string, ClientPreferences>;
 }
 
 // Cliente en la respuesta
 export interface DashboardClient {
     id: string;
+    name: string;
     type: 'client';
+    archived: boolean;
     health: number;
     alerts: string[];
     logo: string;
@@ -202,7 +214,7 @@ export interface DashboardClient {
 // Compañía central en la respuesta
 export interface DashboardCentral {
     id: string;
-    type: 'company' | 'contract' | 'central';
+    type: 'company' | 'contract' | 'central' | 'client';
     health: number;
     power: number;
     efficiency: number;
@@ -224,6 +236,8 @@ export interface LeanClient {
     _id: Types.ObjectId;
     name: string;
     imgLogo?: string;
+    archived?: boolean;
+    preferences?: ClientPreferences;
     [key: string]: any;
 }
 
@@ -235,6 +249,7 @@ export interface LeanContract {
     identifier: number;
     status: number;
     netAmount: number;
+    currency?: string;
     balance?: number;
     [key: string]: any;
 }
@@ -311,15 +326,18 @@ export interface ProcessedContract {
     id: string;
     name: string;
     status: 'active' | 'pending' | 'completed' | 'suspended' | 'expired' | 'cancelled';
-    profitability: number;
+    profitability: number | null;
     netAmount: number;
+    currency: string;
     notifications: ContractNotification[];
+    notificationCount: number;
 }
 
 // Cliente procesado
 export interface ProcessedClient {
     id: string;
     type: 'client';
+    archived: boolean;
     health: number;
     alerts: string[];
     logo: string;

@@ -1,9 +1,11 @@
 'use client'
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { AiOutlineUser } from 'react-icons/ai';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { ClientFormType } from '@/lib/types';
+import { getClientImageSrc } from '@/lib/clientImage';
 
 function EdicionClienteContent() {
     const [client, setClient] = useState<ClientFormType>({
@@ -18,16 +20,20 @@ function EdicionClienteContent() {
     });
     const params = useSearchParams();
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const {
         setValue,
         register,
+        watch,
         formState: {
             errors
         },
         handleSubmit,
     } = useForm<ClientFormType>();
     const [error, setError] = useState("");
+    const imagePath = watch("imgLogo") ?? client.imgLogo;
+    const imageSrc = getClientImageSrc(imagePath);
 
     const updateFormValues = (data: { client: ClientFormType }) => {
         console.log("DATA", data);
@@ -61,16 +67,29 @@ function EdicionClienteContent() {
         const id = params.get("_id");
         console.log("SUBMITING...", id, data);
         try {
-            await fetch(`/api/clients${id != null ? ('/' + id) : ''}`, {
+            const response = await fetch(`/api/clients${id != null ? ('/' + id) : ''}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data)
             });
+            if (!response.ok) {
+                throw new Error("No se pudo guardar el cliente.");
+            }
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["panel-data"] }),
+                queryClient.invalidateQueries({
+                    queryKey: ["client-preferences"],
+                }),
+            ]);
             router.back();
         } catch (error) {
-            console.log("ERROR", error);
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Ocurrió un error al guardar el cliente."
+            );
         }
     }
 
@@ -84,19 +103,20 @@ function EdicionClienteContent() {
             <div className="max-w-lg m-auto">
                 <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-wrap space-y-6">
                     <div>
-                        {client.imgLogo == "" ? <div className="block h-40 w-40 m-auto mb-6">
+                        {!imageSrc ? <div className="block h-40 w-40 m-auto mb-6">
                             <div className="h-40 w-40 bg-slate-400 rounded-full text-white p-4 m-auto">
                                 <AiOutlineUser size="8rem" />
                             </div>
                         </div>
-                            : <img className="m-auto w-40 h-40 rounded-full" src={client.imgLogo} alt={client.name} />
+                            : <img className="m-auto w-40 h-40 rounded-full" src={imageSrc} alt={client.name} />
                         }
                     </div>
                     <div className="ml-4">
-                        <label htmlFor="avatar" className="block text-sm font-medium leading-6 text-gray-900">Avatar URL</label>
+                        <label htmlFor="imgLogo" className="block text-sm font-medium leading-6 text-gray-900">Imagen del cliente (ruta local)</label>
                         <div className="mt-2">
-                            <input {...register('imgLogo')} id="imgLogo" name="imgLogo" type="text" autoComplete="imgLogo"
+                            <input {...register('imgLogo')} id="imgLogo" name="imgLogo" type="text" autoComplete="off" placeholder="./profiles/ms.png"
                                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6" />
+                            <p className="mt-1 text-xs text-gray-500">Ruta relativa a public, por ejemplo ./profiles/ms.png</p>
                         </div>
                     </div>
                     <div className="w-full">

@@ -1,236 +1,401 @@
-'use client'
-import { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import Link from 'next/link';
-import { AiFillHome } from 'react-icons/ai';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
-import { FaRegSave } from 'react-icons/fa';
-import { ClientItemListType, ContractFormType, UserFormType } from '@/lib/types';
+"use client";
 
-type ContratoFormType = {
-    id: string | undefined,
-    title: string,
-    clientId: string | null,
-    vendorId: string | null,
-    status: string,
-    currency: string | null,
-    netAmount: number,
-    termsOfPayment: string | null   
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import type { ClientItemListType, UserFormType } from "@/lib/types";
+import "./ContractEditor.css";
+
+interface ContractEditorForm {
+    title: string;
+    clientId: string;
+    vendorId: string;
+    status: string;
+    currency: string;
+    netAmount: string;
+    termsOfPayment: string;
 }
 
+interface ContractRecord {
+    title?: string;
+    clientId?: string | null;
+    vendorId?: string | null;
+    status?: number;
+    currency?: string;
+    netAmount?: number;
+    termsOfPayment?: string;
+}
+
+const INITIAL_FORM: ContractEditorForm = {
+    title: "",
+    clientId: "",
+    vendorId: "",
+    status: "0",
+    currency: "CLP",
+    netAmount: "",
+    termsOfPayment: "",
+};
+
+const CONTRACT_STATUSES = [
+    { value: "0", label: "Borrador" },
+    { value: "1", label: "Activo" },
+    { value: "2", label: "Inactivo" },
+    { value: "3", label: "Cerrado" },
+    { value: "4", label: "Rechazado" },
+];
+
 function EdicionContratoContent() {
-    const [clientes, setClientes] = useState<ClientItemListType[]>([]);
-    const [vendedores, setVendedores] = useState<UserFormType[]>([]);
-    const [contrato, setContrato] = useState<ContratoFormType>({
-        id: undefined,
-        title: "",
-        clientId: null,
-        vendorId: null,
-        status: "borrador",
-        currency: null,
-        netAmount: 0,
-        termsOfPayment: null,
-    });
+    const [clients, setClients] = useState<ClientItemListType[]>([]);
+    const [vendors, setVendors] = useState<UserFormType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const params = useSearchParams();
     const router = useRouter();
+    const queryClient = useQueryClient();
+    const contractId = params.get("_id");
+    const selectedClientId = params.get("clientId") ?? "";
 
     const {
-        setValue,
         register,
-        formState: {
-            errors
-        },
         handleSubmit,
-    } = useForm<ContratoFormType>();
-    const [error, setError] = useState("");
-
-    const updateFormValues = (data: { contract: ContractFormType }) => {
-        console.log("DATA", data);
-        (Object.keys(data.contract) as (keyof ContractFormType)[]).forEach(key => {
-            setValue(key, data.contract[key]);
-        });
-        setContrato(data.contract);
-    };
-
-    async function loadContrato(id: string | null) {
-        console.log("GETTING CONTRATO..", id, new Date());
-        if (id == null) return;
-        const response = await fetch(`/api/contracts/${id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-        if (response.status == 201) {
-            console.log("No se pudo obtener el contrato");
-        }
-        const data = await response.json();
-        console.log("DATA", data);
-        Object.keys(data.contract).map(key => {
-            if (key == "netAmount") {
-                const value = new Intl.NumberFormat('es-CL').format(data.contract[key]);
-                setValue(key as keyof ContratoFormType, data.contract[key]);
-                return;
-            } else setValue(key as keyof ContratoFormType, data.contract[key]);
-        });
-        setContrato(data.contract);
-    }
-
-    async function loadClientes() {
-        console.log("GETTING CLIENTES..", new Date());
-        const response = await fetch(`/api/clients`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-        if (response.status == 201) {
-            console.log("No se pudo obtener a los clientes");
-        }
-        const data = await response.json();
-        console.log("DATA", data);
-        setClientes(data.clients);
-    }
-
-    async function loadVendedores() {
-        console.log("GETTING VENDEDORES..", new Date());
-        const response = await fetch(`/api/users`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-        if (response.status == 201) {
-            console.log("No se pudo obtener a los vendedores");
-        }
-        const data = await response.json();
-        console.log("DATA", data);
-        setVendedores(data.users);
-    }
-
-    const onSubmit: SubmitHandler<ContractFormType> = async (data) => {
-        const id = params.get("_id");
-        console.log("SUBMITING...", id, data);
-        data.netAmount = Number(data.netAmount.toString().replace(/\D/g, ''));
-        try {
-            await fetch(`/api/contracts${id != null ? ('/' + id) : ''}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data)
-            });
-            router.back();
-        } catch (error) {
-            console.log("ERROR", error);
-        }
-    }
+        reset,
+        formState: { errors },
+    } = useForm<ContractEditorForm>({
+        defaultValues: INITIAL_FORM,
+    });
 
     useEffect(() => {
-        async function loadData() {
-            await Promise.all([loadClientes(), loadVendedores()]);
-            const id = params.get("_id");
-            if (id) loadContrato(id);
-        }
-        loadData();
-    }, [])
+        let isCurrent = true;
 
-    return (<main className="w-full h-screen">        
-        <div className="py-14 w-full h-screen overflow-y-scroll">            
-        <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pt-4 mx-10 bg-white dark:bg-gray-900">
-            <div className="flex items-center space-x-4 text-ship-cove-800">
-                <Link href="/">
-                    <AiFillHome size="1.25rem" className="text-gray-700 dark:text-gray-300 ml-2" />
-                </Link>
-                <IoIosArrowForward size="1.25rem" className="text-gray-700 dark:text-gray-300" />
-                <Link href="/homeneo/contratos">
-                    <span className="text-sm font-semibold leading-6 text-gray-700 dark:text-gray-300">CONTRATOS</span>
-                </Link>
-                <IoIosArrowForward size="1.25rem" className="text-gray-700 dark:text-gray-300" />
-                <span className="text-sm font-semibold leading-6 text-gray-700 dark:text-gray-300">EDICIÓN</span>
-            </div>
-        </div>
-            <div className="max-w-lg m-auto">
-                <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6 flex flex-wrap">
-                    <div className="w-full flex">
-                        <div className="w-1/2 pr-2">
-                            <label htmlFor="clientId" className="block text-sm font-medium text-gray-700">Cliente</label>
-                            <select id="clientId" {...register("clientId")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
-                                <option>Seleccione uno</option>
-                                {clientes && clientes.map(cliente => <option key={cliente.id} value={cliente.id}>{cliente.name}</option>)}
+        async function loadFormData() {
+            setIsLoading(true);
+            setError(null);
+
+            try {
+                const [clientsResponse, usersResponse] = await Promise.all([
+                    fetch("/api/clients"),
+                    fetch("/api/users"),
+                ]);
+
+                if (!clientsResponse.ok || !usersResponse.ok) {
+                    throw new Error("No se pudieron cargar clientes y vendedores.");
+                }
+
+                const [clientsData, usersData] = await Promise.all([
+                    clientsResponse.json() as Promise<{
+                        clients: ClientItemListType[];
+                    }>,
+                    usersResponse.json() as Promise<{
+                        users: UserFormType[];
+                    }>,
+                ]);
+
+                if (!isCurrent) return;
+                setClients(clientsData.clients);
+                setVendors(usersData.users);
+
+                if (contractId) {
+                    const contractResponse = await fetch(
+                        `/api/contracts/${encodeURIComponent(contractId)}`
+                    );
+                    if (!contractResponse.ok) {
+                        throw new Error("No se pudo cargar el contrato.");
+                    }
+
+                    const contractData = (await contractResponse.json()) as {
+                        contract?: ContractRecord;
+                    };
+                    if (!contractData.contract) {
+                        throw new Error("La respuesta no contiene el contrato.");
+                    }
+
+                    if (!isCurrent) return;
+                    reset({
+                        title: contractData.contract.title ?? "",
+                        clientId: contractData.contract.clientId
+                            ? contractData.contract.clientId
+                            : "",
+                        vendorId: contractData.contract.vendorId
+                            ? contractData.contract.vendorId
+                            : "",
+                        status: String(contractData.contract.status ?? 0),
+                        currency: contractData.contract.currency ?? "CLP",
+                        netAmount: String(
+                            contractData.contract.netAmount ?? 0
+                        ),
+                        termsOfPayment:
+                            contractData.contract.termsOfPayment ?? "",
+                    });
+                } else {
+                    reset({
+                        ...INITIAL_FORM,
+                        clientId: selectedClientId,
+                    });
+                }
+            } catch (loadError) {
+                if (isCurrent) {
+                    setError(
+                        loadError instanceof Error
+                            ? loadError.message
+                            : "Ocurrió un error al cargar el formulario."
+                    );
+                }
+            } finally {
+                if (isCurrent) setIsLoading(false);
+            }
+        }
+
+        void loadFormData();
+        return () => {
+            isCurrent = false;
+        };
+    }, [contractId, reset, selectedClientId]);
+
+    const onSubmit: SubmitHandler<ContractEditorForm> = async (formData) => {
+        setIsSaving(true);
+        setError(null);
+
+        const netAmount = Number(formData.netAmount);
+        if (!Number.isFinite(netAmount) || netAmount < 0) {
+            setError("Ingresa un monto neto válido.");
+            setIsSaving(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `/api/contracts${contractId ? `/${encodeURIComponent(contractId)}` : ""}`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        title: formData.title.trim(),
+                        clientId: formData.clientId,
+                        vendorId: formData.vendorId || null,
+                        status: Number(formData.status),
+                        currency: formData.currency,
+                        netAmount,
+                        termsOfPayment: formData.termsOfPayment.trim(),
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const responseText = await response.text();
+                throw new Error(
+                    responseText || "No se pudo guardar el contrato."
+                );
+            }
+
+            await queryClient.invalidateQueries({
+                queryKey: ["panel-data"],
+            });
+            router.back();
+        } catch (saveError) {
+            setError(
+                saveError instanceof Error
+                    ? saveError.message
+                    : "Ocurrió un error al guardar el contrato."
+            );
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <main className="contract-editor-page">
+                <div className="contract-editor-frame" role="status">
+                    Cargando formulario de contrato...
+                </div>
+            </main>
+        );
+    }
+
+    return (
+        <main className="contract-editor-page">
+            <section
+                aria-labelledby="contract-editor-title"
+                className="contract-editor-frame"
+            >
+                <div className="contract-editor-content">
+                    <header className="contract-editor-heading">
+                        <p className="contract-editor-kicker">
+                            Gestión de contratos
+                        </p>
+                        <h1 id="contract-editor-title">
+                            {contractId ? "Editar contrato" : "Nuevo contrato"}
+                        </h1>
+                        <p>
+                            Completa los datos del contrato y su relación
+                            comercial.
+                        </p>
+                    </header>
+
+                    {error && (
+                        <p className="contract-editor-error" role="alert">
+                            {error}
+                        </p>
+                    )}
+
+                    <form
+                        className="contract-editor-form"
+                        onSubmit={handleSubmit(onSubmit)}
+                    >
+                        <label className="contract-editor-field">
+                            <span>Cliente *</span>
+                            <select
+                                {...register("clientId", {
+                                    required: "Selecciona un cliente.",
+                                })}
+                                required
+                            >
+                                <option value="">Selecciona un cliente</option>
+                                {clients.map((client) => (
+                                    <option key={client.id} value={client.id}>
+                                        {client.name}
+                                    </option>
+                                ))}
                             </select>
-                        </div>
-                        <div className="w-1/2 pl-2 mt-0">
-                            <label htmlFor="vendorId" className="block text-sm font-medium text-gray-700">Vendedor</label>
-                            <select id="vendorId" {...register("vendorId")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
-                                <option>Seleccione uno</option>
-                                {vendedores && vendedores.map(vendedor => <option key={vendedor.id} value={vendedor.id}>{vendedor.name}</option>)}
+                            {errors.clientId && (
+                                <small>{errors.clientId.message}</small>
+                            )}
+                        </label>
+
+                        <label className="contract-editor-field">
+                            <span>Vendedor</span>
+                            <select {...register("vendorId")}>
+                                <option value="">Sin vendedor asignado</option>
+                                {vendors.map((vendor) => (
+                                    <option key={vendor.id} value={vendor.id}>
+                                        {vendor.name}
+                                    </option>
+                                ))}
                             </select>
-                        </div>
-                    </div>
-                    <div className="w-full">
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">Título</label>
-                    <input type="text" id="title" {...register("title")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm" />
-                    </div>
-                    <div className="w-3/8 pr-4">
-                        <label htmlFor="status" className="block text-sm font-medium text-gray-700">Estatus</label>
-                        <select id="status" {...register("status")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
-                            <option value={0}>Borrador</option>
-                            <option value={1}>Activo</option>
-                            <option value={2}>Inactivo</option>
-                            <option value={3}>Cerrado</option>
-                        </select>
-                    </div>
-                    <div className="w-1/8 pr-2">
-                        <label htmlFor="currency" className="block text-sm font-medium text-gray-700">Moneda</label>
-                        <select id="currency" {...register("currency")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm">
-                            <option value="CLP">CLP</option>
-                            <option value="USD">USD</option>
-                        </select>
-                    </div>
-                    <div className="w-4/8 pl-2">
-                        <label htmlFor="netAmount" className="block text-sm font-medium text-gray-700">Monto neto</label>
-                        <div className="mt-1 flex rounded-md shadow-sm">
-                            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                                CLP $
-                            </span>
+                        </label>
+
+                        <label className="contract-editor-field contract-editor-field-wide">
+                            <span>Título *</span>
                             <input
-                                type="text"
-                                id="netAmount"
-                                {...register("netAmount")}
-                                className="flex-1 block w-full px-3 py-2 border border-gray-300 rounded-none rounded-r-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm"
-                                onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, '');
-                                    const numericValue = Number(value);
-                                    setValue('netAmount', numericValue);
-                                }}
+                                {...register("title", {
+                                    required: "El título es obligatorio.",
+                                    validate: (value) =>
+                                        Boolean(value.trim()) ||
+                                        "El título es obligatorio.",
+                                })}
+                                autoComplete="off"
+                                placeholder="Nombre del contrato"
+                                required
                             />
+                            {errors.title && (
+                                <small>{errors.title.message}</small>
+                            )}
+                        </label>
+
+                        <label className="contract-editor-field">
+                            <span>Estado *</span>
+                            <select {...register("status", { required: true })}>
+                                {CONTRACT_STATUSES.map((status) => (
+                                    <option
+                                        key={status.value}
+                                        value={status.value}
+                                    >
+                                        {status.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+
+                        <label className="contract-editor-field">
+                            <span>Moneda *</span>
+                            <select
+                                {...register("currency", { required: true })}
+                            >
+                                <option value="CLP">CLP</option>
+                                <option value="USD">USD</option>
+                            </select>
+                        </label>
+
+                        <label className="contract-editor-field">
+                            <span>Monto neto *</span>
+                            <input
+                                {...register("netAmount", {
+                                    required: "El monto neto es obligatorio.",
+                                    validate: (value) =>
+                                        (Number.isFinite(Number(value)) &&
+                                            Number(value) >= 0) ||
+                                        "Ingresa un monto válido.",
+                                })}
+                                inputMode="decimal"
+                                min="0"
+                                placeholder="0"
+                                step="any"
+                                type="number"
+                            />
+                            {errors.netAmount && (
+                                <small>{errors.netAmount.message}</small>
+                            )}
+                        </label>
+
+                        <label className="contract-editor-field">
+                            <span>Plazo de pago *</span>
+                            <input
+                                {...register("termsOfPayment", {
+                                    required: "El plazo de pago es obligatorio.",
+                                    validate: (value) =>
+                                        Boolean(value.trim()) ||
+                                        "El plazo de pago es obligatorio.",
+                                })}
+                                placeholder="Ej. 30 días"
+                                required
+                            />
+                            {errors.termsOfPayment && (
+                                <small>
+                                    {errors.termsOfPayment.message}
+                                </small>
+                            )}
+                        </label>
+
+                        <div className="contract-editor-actions">
+                            <button
+                                className="contract-editor-secondary-button"
+                                disabled={isSaving}
+                                onClick={() => router.back()}
+                                type="button"
+                            >
+                                Volver
+                            </button>
+                            <button
+                                className="contract-editor-primary-button"
+                                disabled={isSaving || clients.length === 0}
+                                type="submit"
+                            >
+                                {isSaving
+                                    ? "Guardando..."
+                                    : contractId
+                                      ? "Guardar cambios"
+                                      : "Crear contrato"}
+                            </button>
                         </div>
-                    </div>
-                    <div className="w-full">
-                        <label htmlFor="termsOfPayment" className="block text-sm font-medium text-gray-700">Plazo de pago</label>
-                        <input type="text" id="termsOfPayment" {...register("termsOfPayment")} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:text-sm" />
-                    </div>                    
-                    <div className="w-full flex">
-                        <button className="flex w-full justify-center rounded-md bg-orange-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 mr-1"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                router.back()
-                            }}><IoIosArrowBack size="1.15rem" className="mt-0.5 mr-3" />VOLVER</button>
-                        <button className="flex w-full justify-center rounded-md bg-ship-cove-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-ship-cove-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ship-cove-600 ml-1"
-                            type="submit"><FaRegSave size="1.15rem" className="mt-0.5 mr-3" />GUARDAR</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </main>)
+                    </form>
+                </div>
+            </section>
+        </main>
+    );
 }
 
 export default function EdicionContrato() {
     return (
-        <Suspense fallback={<div>Cargando...</div>}>
+        <Suspense
+            fallback={
+                <main className="contract-editor-page">
+                    Cargando...
+                </main>
+            }
+        >
             <EdicionContratoContent />
         </Suspense>
-    )
+    );
 }

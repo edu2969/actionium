@@ -318,6 +318,1203 @@
     animation: pulse 2s infinite;
 }
 
+.control-panel {
+    position: fixed;
+    z-index: 25;
+    top: 1rem;
+    right: 1rem;
+    width: min(440px, calc(100vw - 2rem));
+    height: min(640px, calc(100dvh - 2rem));
+    color: #e6f7ff;
+    background: url("/panel/marco_004.png") center / 100% 100% no-repeat;
+    filter: drop-shadow(0 0 18px rgba(0, 212, 255, 0.24));
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(calc(100% + 2rem));
+    transition:
+        opacity 280ms ease,
+        transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 420ms;
+    visibility: hidden;
+}
+
+.control-panel.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.control-panel-content {
+    height: 100%;
+    overflow-y: auto;
+    padding: 4.5rem 3.5rem 4rem;
+    scrollbar-color: rgba(0, 212, 255, 0.55) transparent;
+}
+
+.control-panel-content.is-task-editor {
+    position: absolute;
+    inset: 4rem 0 1rem 0;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    overflow: hidden;
+    padding: 0 3rem 0 3.5rem;
+}
+
+.control-panel-content.is-task-editor > .control-panel-secondary-button {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    margin-bottom: 0.8rem;
+}
+
+.control-panel-task-editor {
+    display: flex;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+.control-panel-task-editor-heading {
+    flex: 0 0 auto;
+    margin-bottom: 0.8rem;
+}
+
+.control-panel-task-form {
+    display: flex;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.control-panel-task-form-fields {
+    display: grid;
+    min-height: 0;
+    flex: 1 1 auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 1.1rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-right: -3rem;
+    padding-right: 3rem;
+    padding-bottom: 5rem;
+    scrollbar-color: rgba(0, 212, 255, 0.55) transparent;
+}
+
+.control-panel-task-form-fields::-webkit-scrollbar {
+    width: 6px;
+}
+
+.control-panel-task-form-fields::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.control-panel-task-form-fields::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 255, 0.4);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 3px;
+}
+
+.control-panel-task-form-fields::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 212, 255, 0.6);
+}
+
+.control-panel-task-form-actions {
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    transform: translateY(-1rem);
+}
+
+.control-panel-task-save {
+    min-height: 2.3rem;
+    padding: 0.35rem 0.6rem;
+    border: 0;
+    background: transparent;
+    color: #00d4ff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 5px rgba(0, 212, 255, 0.4);
+    transition: color 150ms ease, text-shadow 150ms ease;
+}
+
+.control-panel-task-save:hover,
+.control-panel-task-save:focus-visible {
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: #f4fbff;
+    text-shadow:
+        0 0 6px #00d4ff,
+        0 0 14px #00d4ff,
+        0 0 24px rgba(0, 212, 255, 0.8);
+}
+
+.control-panel-task-save:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.control-panel-panel-close {
+    position: absolute;
+    z-index: 1;
+    top: 4rem;
+    right: 2.35rem;
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: none;
+    background: transparent;
+    color: #00d4ff;
+    cursor: pointer;
+    font-size: 1.4rem;
+    line-height: 1;
+    transition: background 150ms ease, box-shadow 150ms ease;
+}
+
+.control-panel-panel-close:hover,
+.control-panel-panel-close:focus-visible {
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.35);
+}
+
+.control-panel-panel-close:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.control-panel-kicker {
+    margin: 0 0 0.35rem;
+    color: #00d4ff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.control-panel-title {
+    margin: 0;
+    color: #f4fbff;
+    font-size: clamp(1.15rem, 2vw, 1.55rem);
+    font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    text-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+}
+
+.control-panel-client-logo {
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 1rem 0 0.5rem;
+    border: 1px solid rgba(0, 212, 255, 0.65);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.control-panel-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin: 1.25rem 0;
+}
+
+.control-panel-metrics > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.65rem 0.55rem;
+    border: 1px solid rgba(0, 212, 255, 0.24);
+    background: rgba(0, 10, 25, 0.66);
+}
+
+.control-panel-metrics span {
+    color: #a9c9d7;
+    font-size: 0.65rem;
+    line-height: 1.2;
+}
+
+.control-panel-metrics strong {
+    color: #00e5ff;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+}
+
+.control-panel-copy,
+.control-panel-section > p,
+.control-panel-section li {
+    color: #c1d2df;
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.control-panel-copy {
+    margin: 1.1rem 0 1.25rem;
+}
+
+.control-panel-section {
+    margin-top: 1.1rem;
+}
+
+.control-panel-section h3 {
+    margin: 0 0 0.55rem;
+    color: #00d4ff;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.control-panel-contract-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+}
+
+.control-panel-contract-heading h3 {
+    margin-bottom: 0;
+}
+
+.control-panel-contract-add {
+    min-height: 2rem;
+    flex: 0 0 auto;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.62rem;
+}
+
+.control-panel-archived-toggle,
+.control-panel-switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: #c1d2df;
+    font-size: 0.76rem;
+    line-height: 1.4;
+}
+
+.control-panel-archived-toggle {
+    position: relative;
+    margin: 0 0 1.1rem;
+    padding: 0.75rem;
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: rgba(0, 10, 25, 0.55);
+}
+
+.control-panel-switch {
+    position: relative;
+    width: 100%;
+}
+
+.control-panel-archived-toggle input,
+.control-panel-switch input {
+    position: absolute;
+    width: 2.8rem;
+    height: 1.55rem;
+    right: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.control-panel-switch-track {
+    position: relative;
+    display: inline-block;
+    width: 2.8rem;
+    height: 1.55rem;
+    flex: 0 0 auto;
+    border: 1px solid rgba(136, 165, 183, 0.65);
+    border-radius: 999px;
+    background: rgba(37, 51, 67, 0.9);
+    transition: background 180ms ease, border-color 180ms ease;
+}
+
+.control-panel-switch-track::after {
+    position: absolute;
+    top: 0.17rem;
+    left: 0.18rem;
+    width: 1.05rem;
+    height: 1.05rem;
+    border-radius: 50%;
+    background: #c1d2df;
+    content: "";
+    transition: transform 180ms ease, background 180ms ease;
+}
+
+.control-panel-archived-toggle input:checked + .control-panel-switch-track,
+.control-panel-switch input:checked + .control-panel-switch-track {
+    border-color: #00d4ff;
+    background: rgba(0, 174, 214, 0.42);
+}
+
+.control-panel-archived-toggle input:checked + .control-panel-switch-track::after,
+.control-panel-switch input:checked + .control-panel-switch-track::after {
+    transform: translateX(1.22rem);
+    background: #00e5ff;
+}
+
+.control-panel-archived-toggle input:focus-visible + .control-panel-switch-track,
+.control-panel-switch input:focus-visible + .control-panel-switch-track {
+    outline: 2px solid #e6f7ff;
+    outline-offset: 3px;
+}
+
+.control-panel-switch input:disabled {
+    cursor: wait;
+}
+
+.control-panel-archived-status {
+    display: inline-block;
+    margin: 0.65rem 0 0;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(255, 181, 71, 0.55);
+    color: #ffc66e;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.control-panel-archive-action {
+    margin-top: 1rem;
+}
+
+.control-panel-archive-confirm {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 181, 71, 0.35);
+    background: rgba(30, 22, 10, 0.58);
+}
+
+.control-panel-archive-confirm .control-panel-switch {
+    color: #ffd99b;
+    font-size: 0.7rem;
+}
+
+.control-panel-archive-confirm .control-panel-switch input {
+    right: 0.1rem;
+}
+
+.control-panel-archive-cancel {
+    display: grid;
+    width: 1.8rem;
+    height: 1.8rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: none;
+    background: transparent;
+    color: #00d4ff;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.control-panel-archive-cancel:hover,
+.control-panel-archive-cancel:focus-visible {
+    color: #e6f7ff;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+}
+
+.control-panel-archive-cancel:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.control-panel-archive-error {
+    margin: 0.5rem 0 0;
+    color: #ff9a9a;
+    font-size: 0.72rem;
+    line-height: 1.4;
+}
+
+.control-panel-section ul {
+    margin: 0;
+    padding-left: 1.1rem;
+}
+
+.control-panel-section li + li {
+    margin-top: 0.35rem;
+}
+
+.control-panel-list {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.control-panel-list-item {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    background: rgba(0, 10, 25, 0.7);
+    color: #f4fbff;
+    cursor: pointer;
+    text-align: left;
+}
+
+.control-panel-list-item:hover,
+.control-panel-list-item:focus-visible {
+    border-color: #00d4ff;
+    background: rgba(0, 212, 255, 0.13);
+}
+
+.control-panel-list-item span:first-child {
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.control-panel-list-item span:last-child {
+    color: #a9c9d7;
+    font-size: 0.68rem;
+}
+
+.control-panel-details {
+    display: grid;
+    gap: 0.65rem;
+    margin: 1.25rem 0;
+}
+
+.control-panel-details > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.16);
+}
+
+.control-panel-details dt {
+    color: #a9c9d7;
+    font-size: 0.75rem;
+}
+
+.control-panel-details dd {
+    margin: 0;
+    color: #f4fbff;
+    font-size: 0.75rem;
+    text-align: right;
+}
+
+.contract-summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    overflow-y: auto;
+    padding: 1rem 1rem 0.3rem;
+}
+
+.contract-summary-card .control-panel-kicker {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+}
+
+.project-summary-card {
+    padding-top: 1.1rem;
+}
+
+.project-summary-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.project-summary-title {
+    display: grid;
+    min-width: 0;
+    gap: 0.35rem;
+}
+
+.project-summary-title h2 {
+    margin: 0;
+    color: #f4fbff;
+    font-size: 1.05rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.project-type-chip {
+    justify-self: start;
+    padding: 0.18rem 0.42rem;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 999px;
+    background: rgba(0, 212, 255, 0.08);
+    color: #9cecff;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.project-summary-start {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.project-summary-start > div {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.project-summary-start span {
+    color: #a9c9d7;
+    font-size: 0.63rem;
+}
+
+.project-summary-start strong {
+    color: #f4fbff;
+    font-size: 0.78rem;
+}
+
+.project-summary-edit {
+    display: grid;
+    width: 1.8rem;
+    height: 1.8rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgba(0, 212, 255, 0.28);
+    border-radius: 0.35rem;
+    background: rgba(0, 212, 255, 0.07);
+    color: #00d4ff;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.project-summary-edit:hover,
+.project-summary-edit:focus-visible {
+    border-color: #00d4ff;
+    background: rgba(0, 212, 255, 0.2);
+    color: #f4fbff;
+}
+
+.project-summary-edit:focus-visible {
+    outline: 1px solid #00d4ff;
+    outline-offset: 2px;
+}
+
+.project-summary-performance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.project-summary-performance .contract-project-progress {
+    min-width: 0;
+    gap: 0.55rem;
+}
+
+.project-summary-performance .contract-progress-ring {
+    width: 4.75rem;
+    height: 4.75rem;
+}
+
+.project-summary-performance .contract-project-task-counts strong {
+    font-size: 0.78rem;
+}
+
+.project-summary-profitability {
+    display: grid;
+    min-width: 0;
+    gap: 0.3rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: rgba(0, 10, 25, 0.55);
+}
+
+.project-summary-profitability span {
+    color: #a9c9d7;
+    font-size: 0.63rem;
+}
+
+.project-summary-profitability strong {
+    color: #f4fbff;
+    font-size: 1rem;
+}
+
+.contract-summary-client {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.contract-summary-client h2 {
+    margin: 0;
+    color: #f4fbff;
+    font-size: 1.05rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.contract-summary-status {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.contract-status-indicator {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.4rem;
+    color: #ffc66d;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.contract-status-indicator > span {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: #ffae42;
+    box-shadow: 0 0 9px rgba(255, 174, 66, 0.8);
+}
+
+.contract-status-indicator.is-active {
+    color: #78f5b2;
+}
+
+.contract-status-indicator.is-active > span {
+    background: #35e891;
+    box-shadow: 0 0 9px rgba(53, 232, 145, 0.8);
+}
+
+.contract-summary-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.contract-summary-metrics > div {
+    min-width: 0;
+    padding: 0.6rem;
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: rgba(0, 10, 25, 0.55);
+}
+
+.contract-summary-metrics dt {
+    color: #a9c9d7;
+    font-size: 0.63rem;
+}
+
+.contract-summary-metrics dd {
+    margin: 0.25rem 0 0;
+    color: #f4fbff;
+    font-size: clamp(1.1rem, 4vw, 1.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+
+.contract-notification-control {
+    position: relative;
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    align-self: center;
+    color: #d8f7ff;
+    font-size: 1.15rem;
+}
+
+.contract-notification-badge {
+    position: absolute;
+    top: -0.15rem;
+    right: -0.15rem;
+    display: grid;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    place-items: center;
+    padding: 0 0.2rem;
+    border: 1px solid rgba(255, 83, 112, 0.75);
+    border-radius: 50%;
+    background: rgba(255, 49, 88, 0.2);
+    color: #ff8297;
+    font-size: 0.62rem;
+    font-weight: 800;
+}
+
+.contract-projects-fieldset {
+    display: grid;
+    min-width: 0;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.85rem 0.85rem;
+    border: 1px solid rgba(0, 212, 255, 0.42);
+    border-radius: 0.5rem;
+    background: rgba(0, 10, 25, 0.38);
+}
+
+.contract-projects-fieldset legend {
+    padding: 0 0.45rem;
+    color: #00d4ff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.contract-latest-project {
+    display: grid;
+    gap: 0.65rem;
+    min-width: 0;
+    padding-top: 0.3rem;
+}
+
+.contract-latest-project-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.contract-latest-project-header .control-panel-kicker {
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.contract-latest-project h3 {
+    margin: 0;
+    color: #f4fbff;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+.contract-latest-project-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.control-panel-secondary-button.contract-project-action {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-height: 0;
+    padding: 0.2rem 0.35rem;
+    border: 0;
+    background: transparent;
+    color: #8abfcd;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    transition: background 150ms ease, color 150ms ease;
+}
+
+.contract-project-action:hover,
+.contract-project-action:focus-visible {
+    background: rgba(0, 212, 255, 0.1);
+    color: #e6f7ff;
+}
+
+.contract-project-action:focus-visible {
+    outline: 1px solid #00d4ff;
+    outline-offset: 2px;
+}
+
+.contract-project-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.contract-progress-ring {
+    width: 5.5rem;
+    height: 5.5rem;
+    flex: 0 0 auto;
+    overflow: visible;
+    transform: rotate(-90deg);
+}
+
+.contract-progress-track,
+.contract-progress-value {
+    fill: none;
+    stroke-width: 3.5;
+}
+
+.contract-progress-track {
+    stroke: rgba(0, 212, 255, 0.16);
+}
+
+.contract-progress-value {
+    stroke: #00d4ff;
+    stroke-linecap: round;
+    animation: contract-progress-fill 900ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: stroke-dasharray 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes contract-progress-fill {
+    from {
+        stroke-dasharray: 0 100;
+    }
+}
+
+.contract-progress-label {
+    fill: #f4fbff;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    transform: rotate(90deg);
+    transform-origin: 18px 18px;
+}
+
+.contract-project-task-counts {
+    display: grid;
+    gap: 0.2rem;
+    color: #a9c9d7;
+    font-size: 0.7rem;
+}
+
+.contract-project-task-counts strong {
+    color: #f4fbff;
+    font-size: 0.9rem;
+}
+
+.contract-project-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: -0.35rem;
+}
+
+.control-panel-primary-button,
+.control-panel-secondary-button {
+    display: inline-flex;
+    min-height: 2.65rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+    border: 1px solid #00d4ff;
+    color: #f4fbff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: center;
+    transition: background 150ms ease, box-shadow 150ms ease;
+}
+
+.control-panel-primary-button {
+    background: linear-gradient(110deg, rgba(0, 212, 255, 0.75), rgba(0, 91, 150, 0.8));
+    box-shadow: 0 0 14px rgba(0, 212, 255, 0.22);
+}
+
+.control-panel-secondary-button {
+    background: rgba(0, 10, 25, 0.72);
+}
+
+.control-panel-primary-button:hover,
+.control-panel-secondary-button:hover {
+    background-color: rgba(0, 212, 255, 0.28);
+    box-shadow: 0 0 16px rgba(0, 212, 255, 0.35);
+}
+
+.control-panel-secondary-button.contract-project-action:hover,
+.control-panel-secondary-button.contract-project-action:focus-visible {
+    background: rgba(0, 212, 255, 0.1);
+    box-shadow: none;
+    color: #e6f7ff;
+}
+
+.control-panel-primary-button:disabled,
+.control-panel-secondary-button:disabled,
+.control-panel-close-button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.control-panel-modal-backdrop {
+    position: fixed;
+    z-index: 50;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(0, 4, 14, 0.8);
+    backdrop-filter: blur(8px);
+}
+
+.control-panel-modal {
+    width: min(900px, 96vw);
+    height: min(700px, 94dvh);
+    color: #e6f7ff;
+    background: url("/panel/marco_002..png") center / 100% 100% no-repeat;
+    filter: drop-shadow(0 0 28px rgba(0, 212, 255, 0.3));
+}
+
+.control-panel-modal-content {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 4.5rem 5.5rem 3.5rem;
+}
+
+.control-panel-modal-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.control-panel-close-button {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgba(0, 212, 255, 0.65);
+    background: rgba(0, 10, 25, 0.8);
+    color: #e6f7ff;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.control-panel-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 1.1rem;
+}
+
+.control-panel-inline-form {
+    margin-top: 1.1rem;
+}
+
+.control-panel-workflow-actions {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 1.25rem;
+}
+
+.control-panel-workflow-add {
+    width: 100%;
+    margin: 0 0 1rem;
+}
+
+.control-panel-sprint-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    padding: 0.75rem;
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    background: rgba(0, 10, 25, 0.66);
+    color: #c1d2df;
+    font-size: 0.75rem;
+}
+
+.control-panel-sprint-summary strong {
+    color: #00e5ff;
+}
+
+.control-panel-sprint-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.control-panel-sprint-card {
+    padding: 0.85rem;
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    background:
+        linear-gradient(135deg, rgba(0, 212, 255, 0.08), transparent 60%),
+        rgba(0, 10, 25, 0.72);
+}
+
+.control-panel-sprint-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    color: #e6f7ff;
+    font-size: 0.75rem;
+}
+
+.control-panel-sprint-heading h3 {
+    margin: 0;
+    color: #00d4ff;
+    font-size: inherit;
+    letter-spacing: 0.08em;
+}
+
+.control-panel-sprint-progress {
+    height: 0.45rem;
+    margin: 0.75rem 0 0.45rem;
+    overflow: hidden;
+    background: rgba(169, 201, 215, 0.18);
+}
+
+.control-panel-sprint-progress span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #00d4ff, #00ff9c);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.45);
+}
+
+.control-panel-sprint-card p,
+.control-panel-sprint-card small {
+    display: block;
+    margin: 0.45rem 0 0;
+    color: #c1d2df;
+    font-size: 0.7rem;
+    line-height: 1.4;
+}
+
+.control-panel-sprint-card small {
+    color: #8eacbd;
+}
+
+.control-panel-todos {
+    display: grid;
+    gap: 0.55rem;
+    padding: 0.75rem;
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: rgba(0, 10, 25, 0.42);
+}
+
+.control-panel-todo-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) 4.5rem auto;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.control-panel-todo-row input:not([type="checkbox"]) {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.3rem;
+    padding: 0.45rem;
+    border: 1px solid rgba(0, 212, 255, 0.32);
+    background: rgba(0, 8, 22, 0.86);
+    color: #f4fbff;
+    font: inherit;
+    font-size: 0.72rem;
+}
+
+.control-panel-todo-row input[type="checkbox"] {
+    accent-color: #00d4ff;
+}
+
+.control-panel-todo-remove {
+    display: grid;
+    width: 1.9rem;
+    height: 1.9rem;
+    place-items: center;
+    border: 1px solid rgba(255, 56, 96, 0.5);
+    background: rgba(255, 56, 96, 0.12);
+    color: #ff9aaa;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.control-panel-log-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 9rem auto;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.control-panel-log-row select,
+.control-panel-log-row input,
+.control-panel-log-row textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.3rem;
+    padding: 0.45rem;
+    border: 1px solid rgba(0, 212, 255, 0.32);
+    background: rgba(0, 8, 22, 0.86);
+    color: #f4fbff;
+    font: inherit;
+    font-size: 0.72rem;
+}
+
+.control-panel-log-row textarea {
+    grid-column: 1 / -2;
+    resize: vertical;
+}
+
+.control-panel-field {
+    display: grid;
+    min-width: 0;
+    gap: 0.4rem;
+    color: #c1d2df;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.control-panel-field-wide {
+    grid-column: 1 / -1;
+}
+
+.control-panel-field input,
+.control-panel-field select,
+.control-panel-field textarea {
+    width: 100%;
+    min-height: 2.55rem;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid rgba(0, 212, 255, 0.38);
+    border-radius: 2px;
+    outline: none;
+    background: rgba(0, 8, 22, 0.86);
+    color: #f4fbff;
+    font: inherit;
+    font-size: 0.82rem;
+}
+
+.control-panel-field select option {
+    background: #081528;
+    color: #f4fbff;
+}
+
+.control-panel-field input:focus,
+.control-panel-field select:focus,
+.control-panel-field textarea:focus {
+    border-color: #00e5ff;
+    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.16);
+}
+
+.control-panel-form-error {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: #ff9a9a;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.control-panel-form-actions {
+    display: flex;
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.35rem;
+}
+
 
 
 /* Scrollbar Styling */
@@ -342,4 +1539,55 @@
 .home-panel::-webkit-scrollbar-thumb:hover,
 .info-panel::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 212, 255, 0.6);
+}
+
+@media (max-width: 640px) {
+    .control-panel {
+        top: auto;
+        right: 0.5rem;
+        bottom: 0.5rem;
+        width: min(390px, calc(100vw - 1rem));
+        height: min(500px, 62dvh);
+    }
+
+    .control-panel-content {
+        padding: 3.5rem 2.7rem 3rem;
+    }
+
+    .control-panel-content.is-task-editor {
+        padding-right: 2.7rem;
+        padding-left: 2.7rem;
+    }
+
+    .control-panel-task-form-fields {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-right: -2.7rem;
+        padding-right: 2.7rem;
+        padding-bottom: 5rem;
+    }
+
+    .control-panel-modal {
+        width: 98vw;
+        height: min(760px, 96dvh);
+    }
+
+    .control-panel-modal-content {
+        padding: 3.75rem 2.5rem 3rem;
+    }
+
+    .control-panel-form {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .control-panel-field-wide,
+    .control-panel-form-error,
+    .control-panel-form-actions {
+        grid-column: 1;
+    }
+
+    .control-panel-form-actions {
+        flex-direction: column-reverse;
+    }
 }

@@ -4,6 +4,7 @@ import { ClientItemListType } from "@/lib/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaPlus, FaUserCircle } from "react-icons/fa";
+import { getClientImageSrc } from "@/lib/clientImage";
 
 export default function Clientes() {
     const [loadingList, setLoadingList] = useState(true);
@@ -63,8 +64,11 @@ export default function Clientes() {
                             {clients.map(client => (
                                 <div key={client.id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     <div className="w-3/6 flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                                        {client.imgLogo && <img className="w-10 h-10 rounded-full" src={client.imgLogo} alt={`${client.name} avatar`} />}
-                                        {client.imgLogo == "" && <FaUserCircle className="w-10 h-10 text-slate-400" size="1em" />}
+                                        {getClientImageSrc(client.imgLogo) ? (
+                                            <img className="w-10 h-10 rounded-full" src={getClientImageSrc(client.imgLogo)} alt={`${client.name} avatar`} />
+                                        ) : (
+                                            <FaUserCircle className="w-10 h-10 text-slate-400" size="1em" />
+                                        )}
                                         <div className="ps-3">
                                             <div className="text-base font-semibold">{client.name}</div>
                                         </div>

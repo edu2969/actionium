@@ -77,12 +77,50 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-    const body = await req.json();
-    console.log("Create Project...", body);    
-    const project = new Project(body);    
-    const projectCount = await Project.countDocuments();
-    project.identifier = projectCount + 1;
-    project.createdAt = new Date();
-    await project.save();
-    return NextResponse.json(project);
+    try {
+        await connectMongoDB();
+        const body = await req.json();
+        if (
+            !body ||
+            typeof body.contractId !== "string" ||
+            !mongoose.isValidObjectId(body.contractId) ||
+            typeof body.title !== "string" ||
+            !body.title.trim() ||
+            !Number.isInteger(Number(body.projectType)) ||
+            !Number.isInteger(Number(body.status)) ||
+            !body.kickOff ||
+            Number.isNaN(new Date(body.kickOff).getTime())
+        ) {
+            return NextResponse.json(
+                { error: "Contract, title, project type, status, and kickoff are required." },
+                { status: 400 }
+            );
+        }
+
+        const contract = await Contract.findById(body.contractId);
+        if (!contract) {
+            return NextResponse.json(
+                { error: "Contract not found." },
+                { status: 404 }
+            );
+        }
+
+        const project = new Project({
+            contractId: contract._id,
+            title: body.title.trim(),
+            projectType: Number(body.projectType),
+            status: Number(body.status),
+            kickOff: new Date(body.kickOff),
+            end: body.end ? new Date(body.end) : undefined,
+        });
+        project.identifier = (await Project.countDocuments()) + 1;
+        await project.save();
+        return NextResponse.json(project, { status: 201 });
+    } catch (error) {
+        console.error("Error creating project:", error);
+        return NextResponse.json(
+            { error: "Could not create project." },
+            { status: 500 }
+        );
+    }
 }

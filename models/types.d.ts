@@ -9,6 +9,10 @@ export interface IClient {
   email?: string;
   address?: string;
   imgLogo?: string;
+  archived?: boolean;
+  preferences?: {
+    archived?: boolean;
+  };
   createdAt?: Date;
   updatedAt?: Date;
 }

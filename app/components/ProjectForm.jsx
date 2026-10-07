@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { AiFillHome } from 'react-icons/ai';
 import { ConfirmModal } from '@/app/components/modals/ConfirmModal';
@@ -26,6 +27,7 @@ function ProjectFormContent() {
 
     const params = useSearchParams();
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const {
         setValue,
@@ -70,13 +72,17 @@ function ProjectFormContent() {
         data.end = dayjs(data.end).utc().format();
         console.log("SUBMITING...", id, data);
         try {
-            await fetch(`/api/projects${id != null ? ('/' + id) : ''}`, {
+            const response = await fetch(`/api/projects${id != null ? ('/' + id) : ''}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data)
             });
+            if (!response.ok) {
+                throw new Error("No se pudo guardar el proyecto.");
+            }
+            await queryClient.invalidateQueries({ queryKey: ["panel-data"] });
             router.back();
         } catch (error) {
             console.log("ERROR", error);

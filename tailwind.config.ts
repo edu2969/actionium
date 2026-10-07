@@ -13,7 +13,7 @@ const config: Config = {
       keyframes: {
         entrance: {
           '0%': { filter: 'opacity(0)', transform: "scale(0.1)" },
-          '100%': { filter: 'opacity(1)', transform: "scale(1.5)" },
+          '100%': { filter: 'opacity(1)', transform: "scale(1)" },
         },
         spin: {
           'from': { transform: "rotate(0deg)" },

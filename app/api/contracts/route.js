@@ -3,6 +3,7 @@ import Contract from "@/models/contract";
 import Client from "@/models/client";
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
+import { calculateContractProfitability } from "@/lib/contractProfitability";
 
 export async function GET(req) {
     console.log("getContracts...");
@@ -30,7 +31,7 @@ export async function GET(req) {
             status: c.status,
             currency: c.currency,
             netAmount: c.netAmount,
-            rentability: 0,
+            rentability: calculateContractProfitability(c.netAmount, c.currency),
             termsOfPayment: c.termsOfPayment,
         };
     }));
@@ -39,6 +40,7 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
+    await connectMongoDB();
     const body = await req.json();
     console.log("Create Contract...", body);    
     const contract = new Contract(body);    

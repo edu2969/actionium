@@ -1,24 +1,26 @@
 'use client'
 
-import { use, useEffect } from 'react';
+import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link'
 import { useState } from 'react';
 import { AiFillHome, AiOutlineMenu, AiOutlineClose, AiFillAliwangwang, AiOutlineLogout } from 'react-icons/ai'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import { GoHomeFill } from 'react-icons/go';
 
 export default function Nav() {
-    const [role, setRole] = useState(0);    
-    const [menuActivo, setMenuActivo] = useState(false);    
+    const [role, setRole] = useState(0);
+    const [menuActivo, setMenuActivo] = useState(false);
     const path = usePathname();
     const router = useRouter();
     const { data: session, status } = useSession();
-    
+
     useEffect(() => {
-        if(status === 'loading') return;
-        if(session && session.user && session.user?.role) {
-            setRole(session.user.role);            
+        if (status === 'loading') return;
+        if (session && session.user && session.user?.role) {
+            setRole(session.user.role);
         }
     }, [session, setRole, status]);
 
@@ -30,40 +32,80 @@ export default function Nav() {
         <div className={`w-screen fixed top-0 left-0 ${path === '/' ? 'hidden' : 'visible'}`}>
             <div className="absolute w-full">
                 <div className="w-full bg-transparent flex">
-                    <AiOutlineMenu size="1.7rem" className="m-4 text-white cursor-pointer"
-                        onClick={() => setMenuActivo(true)} />
-                    <div className="w-full flex justify-end">
-                        <Link href={`/`} onClick={() => setMenuActivo(false)}>
-                            <AiFillHome size="1.7rem" className="m-4 text-white justify-end cursor-pointer" />
-                        </Link>
-                    </div>
+                    {!menuActivo && <AiOutlineMenu size="1.7rem" className="m-4 text-[#08F2F1] cursor-pointer"
+                        onClick={() => setMenuActivo(true)} />}                    
                 </div>
-            </div>
-            <div className="absolute right-0">                
-                <Link href={`/modulos`} onClick={() => setMenuActivo(false)}>
-                    <AiFillHome size="1.7rem" className="mt-4 mr-4 text-slate-800 justify-end cursor-pointer" />
-                </Link>                
-            </div>
-            <div className={`min-w-2xl min-h-full z-50 absolute transition-all bg-[#9cb6dd] p-6 ${menuActivo ? 'left-0' : '-left-full'}`}>
-                <AiOutlineClose size="2rem" className="text-slate-700 m-auto cursor-pointer absolute top-4 right-4"
-                    onClick={() => setMenuActivo(false)} />
-                <div className="mt-12 text-white space-y-6">
-                    <Link href="/about" onClick={() => setMenuActivo(false)}>
-                        <div className="flex hover:bg-white hover:text-[#9cb6dd] rounded-md p-2 cursor-pointer">
-                            <AiFillAliwangwang size="4rem" />
-                            <p className="text-2xl ml-2 mt-4">Acerca de...</p>
-                        </div>
-                    </Link>
-                    <button className="min-w-2xl flex hover:bg-white hover:text-[#9cb6dd] rounded-md p-2"
-                        onClick={async () => { 
+            </div>            
+            <div
+                className={`
+        absolute top-10 left-0
+        w-[360px] h-[calc(100vh-80px)]
+        z-50
+        transition-all duration-300
+        ${menuActivo ? "translate-x-0" : "-translate-x-full"}
+    `}
+            >
+                {/* Fondo */}
+                <Image
+                    src="/panel/marco_001.png"
+                    alt="Marco"
+                    fill
+                    priority
+                    className="object-fill pointer-events-none select-none"
+                />
+
+                {/* Contenido */}
+                <div className="relative h-full p-6">
+
+                    <AiOutlineClose
+                        size="2rem"
+                        className="absolute top-8 right-8 cursor-pointer text-[#08F2F1] hover:text-white transition-colors"
+                        onClick={() => setMenuActivo(false)}
+                    />
+
+                    <div className="mt-12 space-y-6 text-[#08F2F1]">
+
+                        <Link
+                            href="/mainPanel"
+                            onClick={() => setMenuActivo(false)}
+                        >
+                            <div className="flex items-center rounded-lg p-3 transition-all hover:bg-[#08F2F1]/15 hover:text-white">
+                                <GoHomeFill size="3rem" />
+                                <span className="ml-3 text-2xl">
+                                    Panel Principal
+                                </span>
+                            </div>
+                        </Link>
+
+                        <Link
+                            href="/about"
+                            onClick={() => setMenuActivo(false)}
+                        >
+                            <div className="flex items-center rounded-lg p-3 transition-all hover:bg-[#08F2F1]/15 hover:text-white">
+                                <AiFillAliwangwang size="3rem" />
+                                <span className="ml-3 text-2xl">
+                                    Acerca de...
+                                </span>
+                            </div>
+                        </Link>                       
+
+                    </div>
+
+                    <button
+                        className="absolute bottom-6 left-24 flex items-center rounded-lg p-3 transition-all hover:bg-[#08F2F1]/15 hover:text-white text-[#08F2F1]"
+                        onClick={async () => {
                             setMenuActivo(false);
+
                             signOut({ redirect: false }).then(() => {
-                                router.push('/logingOut'); 
+                                router.push("/logingOut");
                             });
-                        }}>
-                        <AiOutlineLogout size="4rem" />
-                        <p className="text-2xl ml-2 mt-4">Cerrar sesión</p>
+                        }}
+                    >
+                        <span className="text-2xl">
+                            Cerrar sesión
+                        </span>
                     </button>
+
                 </div>
             </div>
         </div>

@@ -6,10 +6,13 @@ export async function POST(req, { params }) {
     const body = await req.json();
     await connectMongoDB();
     console.log("Updating contract...", params.id, body);
-    const resp = await Contract.findByIdAndUpdate(params.id, body);
-    return resp ? NextResponse.json(resp) : NextResponse.json(error.message, {
-        status: 404,
-    })
+    const resp = await Contract.findByIdAndUpdate(params.id, body, {
+        new: true,
+        runValidators: true,
+    });
+    return resp
+        ? NextResponse.json(resp)
+        : NextResponse.json({ error: "Contract not found" }, { status: 404 });
 }
 
 export async function GET(req, { params }) {

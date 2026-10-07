@@ -11,6 +11,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { useSearchParams } from "next/navigation";
 import { GiNightSleep } from "react-icons/gi";
 import { ClientItemListType, ContractItemListType } from "@/lib/types";
+import { getClientImageSrc } from "@/lib/clientImage";
 
 function ContratosContent() {
     const [contracts, setContracts] = useState<ContractItemListType[]>([]);
@@ -112,8 +113,8 @@ function ContratosContent() {
                                             : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
                                     }`}
                                 >
-                                    {client.imgLogo ? (
-                                        <img className="w-6 h-6 rounded-full mr-2" src={client.imgLogo} alt={`${client.name} logo`} />
+                                    {getClientImageSrc(client.imgLogo) ? (
+                                        <img className="w-6 h-6 rounded-full mr-2" src={getClientImageSrc(client.imgLogo)} alt={`${client.name} logo`} />
                                     ) : (
                                         <FaUserCircle className="w-6 h-6 text-slate-400 mr-2" />
                                     )}
@@ -143,8 +144,11 @@ function ContratosContent() {
                         {contracts && contracts.map(contract => (
                             <div key={contract._id} className="flex bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-600">
                                 <div className="w-2/12 flex items-center pl-4 text-gray-900 whitespace-nowrap dark:text-white">
-                                    {contract.clientImg && <img className="w-10 h-10 rounded-full" src={contract.clientImg} alt={`${contract.clientName} avatar`} />}
-                                    {contract.clientImg == "" && <FaUserCircle className="w-10 h-10 text-slate-400" size="1em" />}
+                                    {getClientImageSrc(contract.clientImg) ? (
+                                        <img className="w-10 h-10 rounded-full" src={getClientImageSrc(contract.clientImg)} alt={`${contract.clientName} avatar`} />
+                                    ) : (
+                                        <FaUserCircle className="w-10 h-10 text-slate-400" size="1em" />
+                                    )}
                                     <div className="ps-3">
                                         <div className="text-base font-semibold">{contract.clientName}</div>
                                     </div>
@@ -159,7 +163,11 @@ function ContratosContent() {
                                     </div>
                                 </div>
                                 <div className="w-1/12 text-center pt-5">
-                                    <p className="orbitron text-3xl">32<small>%</small></p>
+                                    <p className="orbitron text-3xl">
+                                        {contract.rentability == null
+                                            ? "N/D"
+                                            : `${contract.rentability}%`}
+                                    </p>
                                 </div>
                                 <div className="w-3/12 flex justify-center text-center mt-2 py-2">
                                     <Link href={{

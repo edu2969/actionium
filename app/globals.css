@@ -22,10 +22,6 @@ body {
   overflow: hidden;  
 }
 
-.orbitron {
-  font-family: var(--font-orbitron);
-}
-
 .area{
   position: absolute;
   top: 0;

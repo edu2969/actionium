@@ -1,5 +1,12 @@
 import mongoose, { Schema, models } from "mongoose";
 
+const PreferenceSchema = new Schema({
+  archived: {
+    type: Boolean,
+    default: false
+  },  
+});
+
 const clientSchema = new Schema(
   {
     name: {
@@ -24,6 +31,14 @@ const clientSchema = new Schema(
     imgLogo: {
       type: String,
     },
+    archived: {
+      type: Boolean,
+      default: false,
+    },
+    preferences: {
+      type: PreferenceSchema,
+      default: () => ({ archived: false }),
+    }
   },
   { timestamps: true }
 );

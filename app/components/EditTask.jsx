@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FaCheck, FaRegSave, FaTimes, FaTrash, FaUserCircle } from 'react-icons/fa';
 import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
 import { RiPencilFill } from 'react-icons/ri';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { SlNote } from "react-icons/sl";
@@ -15,6 +16,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export default function EditTask({ params, router }) {
+    const queryClient = useQueryClient();
     const [users, setUsers] = useState([]);
     const [task, setTask] = useState({
         id: undefined,
@@ -91,13 +93,17 @@ export default function EditTask({ params, router }) {
         data.endDate = task.endDate;
         console.log("POSTING", data);
         try {
-            await fetch(`/api/tasks/${params.get("_id") ?? ''}`, {
+            const response = await fetch(`/api/tasks/${params.get("_id") ?? ''}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data)
             });
+            if (!response.ok) {
+                throw new Error("No se pudo guardar la tarea.");
+            }
+            await queryClient.invalidateQueries({ queryKey: ["panel-data"] });
             router.back();
         } catch (error) {
             console.log("ERROR", error);

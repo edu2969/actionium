@@ -6,6 +6,8 @@ import Client from '@/models/client';
 import Contract from '@/models/contract';
 import Project from '@/models/project';
 import Task from '@/models/task';
+import { calculateContractProfitability } from '@/lib/contractProfitability';
+import { TASK_STATUS } from '@/app/utils/constants';
 import { 
     DashboardResponse, 
     DashboardClient, 
@@ -17,6 +19,9 @@ import {
     LeanProject,
     LeanTask 
 } from '@/lib/types';
+
+const isClientArchived = (client: LeanClient): boolean =>
+    (client.preferences?.archived ?? client.archived) === true;
 
 export async function GET(request: NextRequest): Promise<NextResponse<DashboardResponse | { error: string }>> {
     await connectMongoDB();
@@ -30,9 +35,10 @@ export async function GET(request: NextRequest): Promise<NextResponse<DashboardR
         }
 
         // Tipar correctamente las consultas
-        const clients = await Client.find({
-            name: { $ne: "yGa" }
-        }).lean() as any[];
+        const includeArchived =
+            request.nextUrl.searchParams.get("archived") === "true";
+        const clients = (await Client.find({ name: { $ne: "yGa" } }).lean() as unknown as LeanClient[])
+            .filter((client) => includeArchived || !isClientArchived(client));
 
         const clientsWithData = await Promise.all(
             clients.map(async (client: LeanClient) => {
@@ -53,7 +59,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<DashboardR
                                 }).lean() as LeanTask[];
 
                                 const totalTasks = tasks.length;
-                                const completedTasks = tasks.filter((t: LeanTask) => t.status === 100);
+                                const completedTasks = tasks.filter((t: LeanTask) => t.status === TASK_STATUS.closed);
                                 const progress = totalTasks > 0 ? (completedTasks.length / totalTasks) * 100 : 0;
 
                                 const totalHours = tasks.reduce((sum: number, task: LeanTask) => {
@@ -75,17 +81,12 @@ export async function GET(request: NextRequest): Promise<NextResponse<DashboardR
                                         status: task.status,
                                         progress: task.progress || 0,
                                         hours: task.logs?.reduce((sum: number, log: any) => sum + log.hours, 0) || 0,
-                                        completed: task.status === 100,
+                                        completed: task.status === TASK_STATUS.closed,
                                         endDate: task.endDate
                                     }))
                                 };
                             })
                         );
-
-                        const totalProjects = projectsWithTasks.length;
-                        const avgRentability = totalProjects > 0
-                            ? Math.round(projectsWithTasks.reduce((sum, p) => sum + (p.rentability || 0), 0) / totalProjects)
-                            : 0;
 
                         const notifications: Array<{ type: string; message: string }> = [];
 
@@ -98,7 +99,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<DashboardR
 
                         const overdueTasks = projectsWithTasks.flatMap((p: any) =>
                             p.tasks.filter((t: any) => 
-                                t.status < 100 && t.endDate && new Date(t.endDate) < new Date()
+                                t.status !== TASK_STATUS.closed && t.endDate && new Date(t.endDate) < new Date()
                             )
                         );
 
@@ -130,9 +131,14 @@ export async function GET(request: NextRequest): Promise<NextResponse<DashboardR
                             id: contract._id.toString(),
                             name: contract.title || `Contrato ${contract.identifier}`,
                             status,
-                            profitability: avgRentability,
+                            currency: contract.currency || 'CLP',
+                            profitability: calculateContractProfitability(
+                                contract.netAmount,
+                                contract.currency || 'CLP'
+                            ),
                             netAmount: contract.netAmount,
-                            notifications: notifications.slice(0, 3)
+                            notifications: notifications.slice(0, 3),
+                            notificationCount: notifications.length
                         };
                     })
                 );
@@ -146,8 +152,15 @@ export async function GET(request: NextRequest): Promise<NextResponse<DashboardR
                 if (activeContracts / totalContracts > 0.5) health += 10;
                 if (completedContracts / totalContracts > 0.3) health += 5;
 
-                const avgProfitability = totalContracts > 0
-                    ? contractsWithData.reduce((sum: number, c: ProcessedContract) => sum + c.profitability, 0) / totalContracts
+                const contractsWithProfitability = contractsWithData.filter(
+                    (contract: ProcessedContract) => contract.profitability !== null
+                );
+                const avgProfitability = contractsWithProfitability.length > 0
+                    ? contractsWithProfitability.reduce(
+                        (sum: number, contract: ProcessedContract) =>
+                            sum + (contract.profitability ?? 0),
+                        0
+                    ) / contractsWithProfitability.length
                     : 0;
 
                 if (avgProfitability > 70) health += 5;
@@ -168,10 +181,12 @@ export async function GET(request: NextRequest): Promise<NextResponse<DashboardR
 
                 return {
                     id: client._id.toString(),
+                    name: client.name,
                     type: 'client' as const,
+                    archived: isClientArchived(client),
                     health: Math.min(100, Math.max(0, Math.round(health))),
                     alerts,
-                    logo: client.imgLogo || `/clientes/${client.name?.toLowerCase()}-neon.png`,
+                    logo: client.imgLogo || '',
                     revenue: Math.round(revenue * 10) / 10,
                     growth,
                     contracts: contractsWithData
